@@ -1,0 +1,828 @@
+<gconfschemafile>
+  <schemalist>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Indentation</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Indentation</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Indentation</applyto>
+      <owner>GtkGlk</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+        <short>Margins</short>
+	<long>The margin size for text, given in pixels
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/BlockQuote/Indentation</key>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Indentation</applyto>
+      <owner>GtkGlk</owner>
+      <type>int</type>
+      <default>50</default>
+      <locale name="C">
+        <short>Margins</short>
+	<long>The margin size for text, given in pixels
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/ParaIndentation</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Header/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Note/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Input/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/User1/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/User2/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/ParaIndentation</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/ParaIndentation</applyto>
+      <owner>GtkGlk</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+        <short>Paragraph Indentation</short>
+	<long>The indentation for the first line in each paragraph, given
+	      in pixels.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Justification</key>
+      <applyto>/apps/gtkglk/styles/Normal/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Justification</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Justification</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default></default>
+      <locale name="C">
+        <short>The text justification.</short>
+	<long>How text is justified.  Must be empty or one of:
+              Left, Right, Fill, or Center.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/AllStyles/Justification</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Justification</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default>Left</default>
+      <locale name="C">
+        <short>The text justification.</short>
+	<long>How text is justified.  Must be empty or one of:
+              Left, Right, Fill, or Center.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Size</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Size</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Size</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Size</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Size</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Size</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Size</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Size</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Size</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Size</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Size</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Size</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Size</applyto>
+      <owner>GtkGlk</owner>
+      <type>int</type>
+      <default>0</default>
+      <locale name="C">
+        <short>Size of text</short>
+	<long>Zero specifies to use the default font size; positive numbers
+              will increase the font size and negative numbers will decrease
+              it.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Header/Size</key>
+      <applyto>/apps/gtkglk/styles/Header/Size</applyto>
+      <owner>GtkGlk</owner>
+      <type>int</type>
+      <default>2</default>
+      <locale name="C">
+        <short>Size of text</short>
+	<long>Zero specifies to use the default font size; positive numbers
+              will increase the font size and negative numbers will decrease
+              it.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Note/Size</key>
+      <applyto>/apps/gtkglk/styles/Note/Size</applyto>
+      <owner>GtkGlk</owner>
+      <type>int</type>
+      <default>-1</default>
+      <locale name="C">
+        <short>Size of text</short>
+	<long>Zero specifies to use the default font size; positive numbers
+              will increase the font size and negative numbers will decrease
+              it.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Weight</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Weight</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Weight</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Boldface</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Subheader/Weight</key>
+      <applyto>/apps/gtkglk/styles/Subheader/Weight</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Boldface</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Input/Weight</key>
+      <applyto>/apps/gtkglk/styles/Input/Weight</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Boldface</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Oblique</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Oblique</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Oblique</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Italic</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Emphasized/Oblique</key>
+      <applyto>/apps/gtkglk/styles/Emphasized/Oblique</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Italic</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Proportional</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Proportional</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Proportional</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default></default>
+      <locale name="C">
+        <short>Font Family</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Preformatted/Proportional</key>
+      <applyto>/apps/gtkglk/styles/Preformatted/Proportional</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default>monospace</default>
+      <locale name="C">
+        <short>Font Family</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Input/Proportional</key>
+      <applyto>/apps/gtkglk/styles/Input/Proportional</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default>monospace</default>
+      <locale name="C">
+        <short>Font Family</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/TextGrid/Proportional</key>
+      <applyto>/apps/gtkglk/styles/TextGrid/Proportional</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default>monospace</default>
+      <locale name="C">
+        <short>Font Family</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/TextColor</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Header/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Note/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/Input/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/User1/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/User2/TextColor</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/TextColor</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default></default>
+      <locale name="C">
+        <short>Text Foreground Color</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Hyperlinks/TextColor</key>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/TextColor</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default>#0000ff</default>
+      <locale name="C">
+        <short>Text Foreground Color</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/BackColor</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Header/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Note/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Input/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/User1/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/User2/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/BackColor</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/BackColor</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default></default>
+      <locale name="C">
+        <short>Text Background Color</short>
+	<long>
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/ReverseColor</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Header/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Note/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Input/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/User1/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/User2/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/ReverseColor</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/ReverseColor</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Reverse Color</short>
+	<long>If true, the foreground and background colors of text will be swapped.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Direction</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Direction</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Direction</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Direction</short>
+	<long>If true, text will go right-to-left.  If false, text will go right-to-left.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Underline</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Underline</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Underline</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Underline</short>
+	<long>If true, text will be underlined.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Alert/Underline</key>
+      <applyto>/apps/gtkglk/styles/Alert/Underline</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Underline</short>
+	<long>If true, text will be underlined.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Hyperlinks/Underline</key>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Underline</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Underline</short>
+	<long>If true, text will be underlined.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Variant</key>
+      <applyto>/apps/gtkglk/styles/AllStyles/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Variant</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Variant</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Variant</short>
+	<long>If true, use small caps
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/UnImportant</key>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Indentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Indentation_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/ParaIndentation_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/ParaIndentation_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Justification_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Justification_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Size_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Weight_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Weight_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Oblique_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Oblique_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Proportional_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/TextColor_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/BackColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/BackColor_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/ReverseColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/ReverseColor_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Direction_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Direction_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Underline_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Underline_Important</applyto>
+
+      <applyto>/apps/gtkglk/styles/AllStyles/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Normal/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Emphasized/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Preformatted/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Header/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Subheader/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Alert/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Note/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/BlockQuote/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Input/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User1/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/User2/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Variant_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Variant_Important</applyto>
+
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>false</default>
+      <locale name="C">
+        <short>Important</short>
+	<long>If true, the attribute is important, and will not be modified by unimportant changes.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/styles/Important</key>
+      <applyto>/apps/gtkglk/styles/TextGrid/Size_Important</applyto>
+      <applyto>/apps/gtkglk/styles/TextGrid/Proportional_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/TextColor_Important</applyto>
+      <applyto>/apps/gtkglk/styles/Hyperlinks/Underline_Important</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Important</short>
+	<long>If true, the attribute is important, and will not be modified by unimportant changes.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/interface/show-menu</key>
+      <applyto>/apps/gtkglk/interface/show-menu</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Show Menubar</short>
+	<long>If true, the menubar will be shown.  If false, it will be hidden.
+	</long>
+      </locale>
+    </schema>
+      
+    <schema>
+      <key>/schemas/apps/gtkglk/interface/show-statusbar</key>
+      <applyto>/apps/gtkglk/interface/show-statusbar</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Show Statusbar</short>
+	<long>If true, the statusbar will be shown.  If false, it will be hidden.
+	</long>
+      </locale>
+    </schema>
+      
+    <schema>
+      <key>/schemas/apps/gtkglk/interface/show-scrollbars</key>
+      <applyto>/apps/gtkglk/interface/show-scrollbars</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Show Scrollbars</short>
+	<long>If true, scrollbars will be shown if needed on windows.  If false, they will never be shown.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/gestalt/Enable</key>
+      <applyto>/apps/gtkglk/gestalt/MouseInput_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/Timer_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/Graphics_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/DrawImage_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/Sound_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/SoundVolume_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/SoundNotify_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/Hyperlinks_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/HyperlinkInput_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/SoundMusic_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/GraphicsTransparency_Enable</applyto>
+      <applyto>/apps/gtkglk/gestalt/Unicode_Enable</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Gestalt Preference Enable</short>
+	<long>If true, will (attempt to) provide the capability.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/gestalt/Claim</key>
+      <applyto>/apps/gtkglk/gestalt/MouseInput_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/Timer_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/Graphics_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/DrawImage_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/Sound_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/SoundVolume_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/SoundNotify_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/Hyperlinks_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/HyperlinkInput_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/SoundMusic_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/GraphicsTransparency_Claim</applyto>
+      <applyto>/apps/gtkglk/gestalt/Unicode_Claim</applyto>
+      <owner>GtkGlk</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+        <short>Gestalt Preference Claim</short>
+	<long>If true, will claim that it provides the capability.
+	</long>
+      </locale>
+    </schema>
+
+    <schema>
+      <key>/schemas/apps/gtkglk/gestalt/Version</key>
+      <applyto>/apps/gtkglk/gestalt/Version</applyto>
+      <owner>GtkGlk</owner>
+      <type>string</type>
+      <default>0.6.1</default>
+      <locale name="C">
+        <short>Gestalt Version Claim</short>
+	<long>Will claim that it implements the given Glk version.
+	</long>
+      </locale>
+    </schema>
+
+  </schemalist>
+</gconfschemafile>

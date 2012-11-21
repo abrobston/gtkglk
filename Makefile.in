@@ -1,0 +1,65 @@
+# @configure_input@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+CC = @CC@
+
+WARNS = -Wall -W -Wpointer-arith -Wmissing-prototypes 
+
+GFLAGS = -pipe -Os -fpic -fno-common
+#GFLAGS = -g -fpic
+CFLAGS  = $(WARNS) $(GFLAGS) @GTKGLK_GTK_CFLAGS@ @GTKGLK_GCONF_CFLAGS@
+LDFLAGS = @GTKGLK_GTK_LIBS@ @GTKGLK_GCONF_LIBS@ @LIBS@ @LDFLAGS@
+
+OBJS = $(addprefix objs/,gglk.o gui.o window.o stream.o style.o misc.o fileref.o sound.o gestalt.o gglk_graphics.o gglk_text.o gglk_textbuffer.o gglk_textgrid.o gglk_colorpicker.o blorb.o global.o gglk_prefs.o dispatch.o gi_blorb.o gi_dispa.o gtkhpaned.o gtkvpaned.o glkpaned.o support.o interface.o callbacks.o g_bindable.o g_intbits.o trivial.o names.o @LIBOBJS@)
+
+default: Make.gtkglk libgtkglk.so.0.@PACKAGE_VERSION@
+
+libgtkglk.so.0.@PACKAGE_VERSION@: $(OBJS)
+	$(CC) -shared $(GFLAGS) -Wl,-hlibgtkglk.so.0 -o libgtkglk.so.0.@PACKAGE_VERSION@ $(LDFLAGS) $(OBJS)
+
+objs/%.o: src/%.c
+	@echo "  CC      " $<
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+objs/gtkhpaned.o objs/gtkvpaned.o: src/glkpaned.h
+objs/window.o objs/gglk_text.o objs/gglk_textbuffer.o objs/gglk_textgrid.o: src/gglk_text.h
+objs/window.o objs/gglk_textbuffer.o: src/gglk_textbuffer.h
+objs/window.o objs/gglk_textgrid.o: src/gglk_textgrid.h
+objs/window.o objs/gglk_graphics.o: src/gglk_graphics.h
+
+objs/window.o: src/gui_window.c
+objs/stream.o: src/gui_stream.c
+objs/fileref.o: src/gui_fileref.c
+objs/style.o: src/gui_style.c
+
+
+Make.gtkglk: Makefile
+	echo LINKLIBS = $(LDFLAGS) > Make.gtkglk
+	echo GLKLIB = -L$(libdir) -lgtkglk >> Make.gtkglk
+
+clean:
+	rm -f *~ src/*~ objs/*.o Make.gtkglk libgtkglk.*
+	rm -rf autom4te.cache
+
+distclean: clean
+	rm -f Makefile config.log config.status config.cache config.h gtkglk.pc
+
+install: Make.gtkglk libgtkglk.so.0.@PACKAGE_VERSION@
+	install -s -m 644 libgtkglk.so.0.@PACKAGE_VERSION@ $(libdir)
+	cd $(libdir) && ln -sf libgtkglk.so.0.@PACKAGE_VERSION@ libgtkglk.so.0
+	cd $(libdir) && ln -sf libgtkglk.so.0 libgtkglk.so
+	install -m 644 Make.gtkglk $(libdir)
+	install -m 644 src/glk.h $(includedir)
+	gconftool-2 --install-schema-file gtkglk.schemas > /dev/null
+
+uninstall:
+	rm -f $(libdir)/libgtkglk.* $(libdir)/Make.gtkglk
+	rm -f $(includedir)/glk.h
+	gconftool-2 --recursive-unset /apps/gtkglk
+
+package: distclean
+	cd .. && tar cvzf @PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.gz @PACKAGE_TARNAME@-@PACKAGE_VERSION@

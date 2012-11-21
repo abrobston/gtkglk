@@ -1,0 +1,26 @@
+GtkGlk 0.3:
+ * Fix hyperlink event crash (patch from David Young)
+ * Sound code improvements:
+    - proper notification support
+    - use sdlrwops instead of loading an entire sound into memory
+ * Preference dialogs - requires gconf
+ * Menu / Status Bar
+ * glk_style_distinguish actually does something now
+ * supports Gtk+ 2.2.2+ (GtkGlk 0.2 used a private variable which was removed)
+ * partial support for Gtk+ 2.1.x on Solaris 9
+ * Unicode support; see glk-unicode.txt (needs more testing, discussion)
+ * glk_select_poll now works
+
+GtkGlk 0.2:
+ * Caches multiple images, instead of only one
+ * Bug fix for display of small images
+ * hyperlink support
+ * Calculates window sizes itself instead of waiting for GTK to draw them
+ * Returns # of chars *attempted* to be written instead of actually written
+ * changes to scrolling and focus management
+ * stylehint improvements
+ * more permissive about illegal event requests
+ * various minor bug fixes
+
+GtkGlk 0.1:
+ * initial release

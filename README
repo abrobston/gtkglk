@@ -1,0 +1,114 @@
+GtkGlk - a Glk implementation in GTK+.  Copyright 2003-2004 Evin Robertson.
+LGPL (see COPYING) except glk.h, gi_*, and glkstart.*, which are zarf.
+
+This release seems to work pretty well, but not everything has been
+fully tested.  Many things need to be cleaned up.
+
+
+Implemented:
+  Text Buffer          (antialiased if you set GDK_USE_XFT to 1)
+  Text Grid            (mostly working, I *think*... but it's very slow)
+  Graphics Window      (full alpha support, backing store)
+  Sound                (AIFF/MOD/OGG/...)
+  Full style hints     (distinguish is perhaps not ideal, but it works)
+  Hyperlinks           (double-click on them)
+  Unicode              (*_ucs4 functions - see glk-unicode.txt)
+  sglk                 (see sglk.h)
+  gestalt dialog       (enable/disable/pretend various capabilities)
+  Glk object viewer    (examine Glk object tree and view/change stuff)
+  Preferences dialogs  (styles, general UI, gestalt)
+
+Unimplemented / Broken:
+  margin images in text buffer (lacking in GTK)
+  line input in a text grid
+  lacks limit on scrollback
+  automatic scrolling is by paragraph instead of line (bug in GTK)
+  cursor is invisible on black background (bug in GTK)
+  various memory leaks
+  SDL_sound, aRts, jack, etc. for better sound mixing
+  SONG resource support
+  resources outside of blorbs like xglk does
+  zarfnix startup      (ignores glkunix_arguments -- is this a bug or feature?)
+  winglulxe config     (will never be supported)
+  Lots of niceties     (html transcripts, etc)
+
+
+Requirements:
+  GTK+ 2.1 or newer      ftp://www.gtk.org/pub/gtk/v2.4/
+  GConf 2                ftp://ftp.gnome.org/pub/gnome/sources/GConf/2.4/
+
+Recommended:
+  SDL-mixer 1.2.5 or newer
+  libmikmod (for MOD support)
+
+If you're using Debian, do something like:
+  apt-get install libgtk2.0-dev libgconf2-dev libsdl-mixer1.2-dev libmikmod2
+
+
+
+
+Notes about this Glk library:
+
+Each of my opaque types starts with the same several items:
+  glui32 magic, rock, age, type;
+  GList *node;
+  gidispatch_rock_t disprock;
+
+Here's the explanation of each:
+  magic:   identifies which glk type it is.  see GGLK_MAGIC_* in gglk.h
+  rock:    the ubiquitous Glk rock everything hides under
+  age:     useless unique number associated with each object
+  type:    subtype (wintype / strtype)
+  node:    used to make iterate work.
+  disprock:to support dispatch layer's lack of two-way hash tables
+
+The magic is used to do extra runtime checking.  If you pass the wrong
+type of object to a function, the magic will detect this.  Deleted objects
+will also be detected.  If a function only supports certain subtypes,
+this is also detected.
+
+I've tried to keep each section separate.  Except to the implementing file,
+glk types are opaque everywhere.  There are a few functions to leak stuff
+when necessary, but it mostly works.
+
+The window stuff is fairly nasty (and broken in a few ways) because
+the Glk window splitting ideas are completely against the GTK way.
+set_arrangement might not work.  GtkGlk uses a custom paned widget,
+included here, which will probably break if you use a GTK version
+sufficiently different from 2.2.4 from which it was stolen.
+
+
+A lot of the stuff here isn't terribly tied to GTK itself.  A nice
+idea would be to separate stuff out and create a smaller, easier to
+implement layer below Glk.  Maybe some other day.
+
+
+
+GtkGlk is intended to be built as a shared library.  Thus, it contains
+a few optimizations intended for such use.  When I have a task to do
+with several strings, the normal technique would be something like:
+
+static const char *strings[] = { "alpha", "beta", "gamma", NULL }
+int i;
+for(i = 0; strings[i]; i++) {
+   do_something(strings[i]);
+}
+
+But shared objects must be position-independent.  The above would
+require 3 relative relocations.  Instead I do:
+
+static const char strings[] = "alpha" "\0" "beta" "\0" "gamma" "\0";
+const char *p;
+for(p = strings; *p; p += strlen(p) + 1) {
+   do_something(p);
+}
+
+This is only slightly less readable, but does not require relocations
+(means faster start-up time), and the data can be placed in a
+read-only segment.  Doing the strlen is slightly slower, but not
+significantly.
+
+
+Also, all internal symbols, not intended to be used by the Glk
+application, are marked PRIVATE, which is #defined in gglk.h to tell
+gcc not to add them to the dynamic symbol table.

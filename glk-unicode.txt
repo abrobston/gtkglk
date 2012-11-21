@@ -1,0 +1,289 @@
+28 Jul 2003 - First Revision
+28 Jul 2003 - Mentioned Joe Mason's request for vertical text
+30 Jul 2003 - Added gestalt_LineInput, title case
+30 Jul 2003 - Combining Marks, Text Grid
+ 2 Aug 2003 - right-to-left and justification interaction
+
+ * Rationale *
+
+  People may want to write IF games in languages which contain
+  characters not in Latin-1.  The Z-machine and TADS3 both contain
+  some support for Unicode, but it was previously not available in
+  Glk.
+
+  There have been many ideas about how to add Unicode support to Glk
+  such as code pages, UTF-8, and UCS-4.  Code pages have historically
+  been a solution to the i18n problem.  But they are awkward and don't
+  work well for languages with thousands of glyphs.  UTF-8 has an
+  advantage of being relatively compact for text which is mostly
+  ASCII.  But text in Glulx is Huffman-compressed anyway which negates
+  this advantage, and the variable-length character encoding is not
+  trivial to work with.  UCS-4 uses 31-bits for each character in the
+  native byte ordering.  Each character is thus one glui32.  This is
+  simple, and it works.
+
+  The Unicode system for Glk is designed to have several functions
+  which parallel the Latin-1 support functions it already has.
+  Functions which take Unicode are suffixed with _ucs4 to distinguish
+  them from the Latin-1 functions.
+
+  Disclaimer: I don't have any experience reading/writing texts in
+  languages which use non-Latin alphabets.  The text here is based on
+  reading about Unicode from the web.
+
+
+  Gratitude goes to Andrew Plotkin and Iain Merrick for giving
+  suggestions and filtering out some of my bad ideas.  Much of this
+  document is highly derivative of Plotkin's Glk Specification.
+
+
+
+ * Output Functions *
+
+void glk_put_char_ucs4(glui32 ch);
+
+  This prints one Unicode character to the current stream.
+
+void glk_put_string_ucs4(glui32 *s);
+
+  This prints a string of Unicode characters to the current stream.  A
+  string ends on a glui32 whose value is 0.  Its use is depreciated,
+  and not currently available from glulx, as the dispatch layer lacks
+  a type for "a zero-terminated array of glui32."
+
+void glk_put_buffer_ucs4(glui32 *buf, glui32 len);
+
+  This prints a block of Unicode characters to the current stream.
+  It is exactly equivalent to:
+
+    for (i = 0; i < len; i++)
+        glk_put_char_ucs4(buf[i])
+
+void glk_put_char_stream_ucs4(strid_t str, glui32 ch);
+void glk_put_string_stream_ucs4(strid_t str, glui32 *s);
+void glk_put_buffer_stream_ucs4(strid_t str, glui32 *buf, glui32 len);
+
+  These are the same as the above functions, but they specify a stream
+  to print to.
+
+
+
+ * Input Functions *
+
+glsi32 glk_get_char_stream_ucs4(strid_t str);
+
+  Reads one character from the given stream.  The result will be
+  between 0 and 0x7fffffff.  If the end of the stream has been
+  reached, the result will be -1.
+
+glui32 glk_get_buffer_stream_ucs4(strid_t str, glui32 *buf, glui32 len);
+
+  This reads len Unicode characters from the given stream, unless the end
+  of the stream is reached first.  No terminal null is placed in the
+  buffer.  It returns the number of Unicode characters actually read.
+
+glui32 glk_get_line_stream_ucs4(strid_t str, glui32 *buf, glui32 len);
+
+  This reads Unicode characters from the given stream, until either
+  len-1 Unicode characters have been read or a newline has been read.
+  It then puts a terminal null (a zero glui32) character on the end.
+  It returns the number of Unicode characters actually read, including
+  the newline (if there is one) but not including the terminal null.
+
+
+
+ * Unicode Event Requests *
+
+void glk_request_line_event_ucs4(winid_t win, glui32 *buf,
+			         glui32 maxlen, glui32 initlen);
+
+  This requests line input from a text buffer or text grid window,
+  storing the result at buf in Unicode.  The text returned will have
+  been normalized to Unicode form C.  You may not request Unicode line
+  events from a window which has a pending request for any kind of
+  character or line input.
+
+  This event may be canceled by calling glk_cancel_line_event.
+
+  The event returned from a Unicode line request has type
+  evtype_LineInput and the same format as that which would have been
+  returned from a Latin-1 line request.
+
+  You can test whether an implementation allows line input of a given
+  Unicode character by using glk_gestalt(gestalt_LineInput, ch).
+
+
+void glk_request_char_event_ucs4(winid_t win);
+
+  This requests Unicode character input from a text buffer or text
+  grid window.  You may not request Unicode character events from a
+  window which has a pending request for any kind of character or
+  line input.
+
+  This event may be canceled by calling glk_cancel_char_event.
+
+  The event returned from a Unicode character request has type
+  evtype_CharInput and the same format as that which would have been
+  returned from a Latin-1 character request.  However, the value of
+  a character may now range from 0 to 0x7fffffff (special key codes
+  all have the top bit set, and so will not conflict).
+
+  You can test whether an implementation allows character input of a
+  given Unicode character by using glk_gestalt(gestalt_CharInput, ch).
+
+
+
+ * Bi-directional Text *
+
+  Some languages, such as Hebrew, write text from right-to-left,
+  instead of left-to-right.  Some authors may even want to include a
+  passage of Hebrew as part of an English game.  Thus, the library
+  should be able to switch between left-to-right and right-to-left
+  modes.  For compatibility with previous Glk versions, initially the
+  library will start in left-to-right mode.
+
+  For this purpose, a new style hint is added, stylehint_Direction.
+  It is 0 if the text with this hint goes from left-to-right, and 1 if
+  the text with this hint goes from right-to-left.  In particular, if
+  style_Input is set to be right-to-left, then typing at a line input
+  will move the cursor leftwards.
+
+  Setting text to be right-to-left reverses the meaning of
+  justification.  Thus, "left"-justified (the default) text will be
+  flush against the right edge of the window, and "right"-justified
+  will be flush against the left edge of the window.
+
+  Like justification, setting right-to-left text might only take
+  effect if an entire paragraph has this hint set.
+
+  Joe Mason suggests supporting vertical text, (e.g. for some
+  traditional Japanese forms).  This could be done by using a bit mask
+  of stylehint_Direction_LeftToRight, stylehint_Direction_RightToLeft,
+  stylehint_Direction_TopToBottom, stylehint_Direction_BottomToTop,
+  stylehint_Direction_Horizontal, and stylehint_Direction_Vertical,
+  which could be ORed together to generate the desired effect.  A
+  library would need a more sophisticated text widget and clever
+  scrolling routines; e.g., use a horizontal scroll bar or sideways
+  [MORE] prompt to scroll vertical text.
+
+
+
+ * Unicode in a Text Grid *
+
+  Some Unicode characters do not represent actual graphemes, but
+  modifications to a previous character.  These modifications, called
+  "combining marks," and the original letter are combined to form one
+  grapheme.  Such combined graphemes will take up one cell of a Text
+  Grid.  If a program wishes to write text which contains these
+  combinations, it must always write the character to be modified
+  first, followed by the combining marks.  That is, it is illegal to
+  write combining marks immediately after calling
+  glk_window_move_cursor.
+
+  If you write Unicode characters which are double-wide to a text
+  grid, the cursor will advance by two positions.  It is illegal to
+  reposition the cursor so that it is in the middle of a double-wide
+  character.  If you overwrite the first half of a double-wide
+  character, the second half will be replaced by a space.
+
+
+
+ * Upper, Lower, and Title Case *
+
+  You can convert Unicode characters between upper, lower, and title
+  case using the following functions:
+
+glui32 glk_char_to_lower_ucs4(glui32 ch);
+glui32 glk_char_to_upper_ucs4(glui32 ch);
+glui32 glk_char_to_title_ucs4(glui32 ch);
+
+  These are similar to their Latin-1 equivalents, but should work for
+  all Unicode characters which the library is capable of printing.  If
+  a library does not know how to print a character, the library may
+  return the same character as it was given.
+
+  Title case is used when two letters are smushed together into one,
+  and only the first of these letters should be capitalized.  Note
+  that not all Unicode characters have direct upper-case mappings, and
+  may need to be broken into pieces before they can be meaningfully
+  made upper-case.
+
+
+
+ * Mixing Unicode and 8-Bit Streams *
+
+  It is not an inherent problem to specify that a text buffer accept
+  Unicode characters.  But if a program attempts to read or write
+  Unicode characters to a file or memory stream, what should be done?
+
+  Files are used for many things such as transcripts and recorded
+  input files.  Glk must be able to preserve all the characters in
+  such files and the files should be readable by other native
+  programs.
+
+  Memory streams are often used as temporary buffers for text.  They
+  must preserve the Unicode text and give an accurate count of how
+  many characters were written to it.
+
+  If a stream is opened with fileusage_TextMode, then output to it
+  will translated into some native encoding.  This may be UTF-8,
+  UCS-4, HTML with entities, or whatever else is common on the target
+  platform.  On reading from such files, an inverse transformation
+  will be done.
+
+  If a stream is opened with fileusage_BinaryMode, then output to it
+  will be written in UTF-32BE (big-endian UCS-4).  Similarly, reading
+  a Unicode character from a binary stream will read a UTF-32BE
+  character, which is turned to native byte order and placed in a
+  glui32.  For each Unicode character, readcount or writecount (as
+  returned by closing a stream) will be increased by one, but the file
+  position mark will advance by four.  Therefore, there is a
+  difference between glk_put_char_ucs4('X') and glk_put_char('X') when
+  writing to a binary stream.
+
+  Memory streams follow the same rules as files opened in binary mode.
+
+  If you are attempting to calculate the length of a string for format
+  in a text grid, none of the length measurements in this section are
+  of use to you.  You need to use gestalt_CharOutput on each character
+  in the string to measure how much space it will occupy in a grid.
+
+
+
+ * Testing for Unicode Capabilities *
+
+  Before calling the Unicode functions, you should use the following
+  gestalt selector:
+
+    glui32 res;
+    res = glk_gestalt(gestalt_Unicode, 0);
+
+  This returns 1 if the Unicode functions are available.  If it
+  returns 0, you should not try to call them.  They may print nothing,
+  print gibberish, or cause a run-time error.
+
+  Additionally, a library which provides at least stubs for the
+  Unicode functions will define GLK_MODULE_UNICODE, which you can use
+  with the preprocessor to allow your C programs to work both with
+  libraries which support and do not support Unicode.
+
+
+  Most implementations will not support all possible characters in
+  Unicode.  To test whether the implementation can display the Unicode
+  character ch, call:
+
+    glui32 res, len;
+    res = glk_gestalt_ext(gestalt_CharOutput, ch, &len, 1);
+
+  The results will be the same as for Latin-1 characters, except in
+  the case of gestalt_CharOutput_ExactPrint.  With Latin-1 characters,
+  len will always be set to 1.  It will be set to 0 for non-spacing
+  marks, such as combining marks which do not specify a particular
+  character, but merely modify the preceding character, adding
+  punctuation or accents.  It will be set to 2 for Unicode characters
+  which are double-wide (take up two cells in a text grid).
+
+  There is an additional problem: a character may be printable, and a
+  combining mark may be printable, but their combination might *not*
+  be printable.
+
