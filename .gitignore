@@ -1,0 +1,9 @@
+objs
+objs/*
+*.so*
+gtkglk.pc
+config.h
+config.log
+config.status
+Makefile
+Make.gtkglk
