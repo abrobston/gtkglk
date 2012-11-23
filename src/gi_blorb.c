@@ -1,31 +1,23 @@
 /* gi_blorb.c: Blorb library layer for Glk API.
-    gi_blorb version 1.4.
+    gi_blorb version 1.5.
     Designed by Andrew Plotkin <erkyrath@eblong.com>
-    http://www.eblong.com/zarf/glk/index.html
+    http://eblong.com/zarf/glk/
 
-    This file is copyright 1998-2000 by Andrew Plotkin. You may copy,
+    This file is copyright 1998-2010 by Andrew Plotkin. You may copy,
     distribute, and incorporate it into your own programs, by any means
     and under any conditions, as long as you do not modify it. You may
     also modify this file, incorporate it into your own programs,
     and distribute the modified version, as long as you retain a notice
     in your program or documentation which mentions my name and the URL
     shown above.
-
-
-    Changed, 2004 by Evin Robertson: removed qsort and bsearch definitions;
-    use platform native routines.  Removed double-indirection of ressorted.
-    Also cleaned up a few compiler warnings.
 */
 
 #include "glk.h"
 #include "gi_blorb.h"
-#include <glib.h>
-#include <stdlib.h>
 
-#define giblorb_malloc(len) (g_malloc(len))
-#define giblorb_realloc(ptr, len) (g_realloc(ptr, len))
-#define giblorb_free(ptr) (g_free(ptr))
-
+#ifndef NULL
+#define NULL 0
+#endif
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -73,11 +65,13 @@ struct giblorb_map_struct {
         valid */
     strid_t file;
     
-    glui32 numchunks;
+    int numchunks;
     giblorb_chunkdesc_t *chunks; /* list of chunk descriptors */
     
     int numresources;
     giblorb_resdesc_t *resources; /* list of resource descriptors */
+    giblorb_resdesc_t **ressorted; /* list of pointers to descriptors 
+        in map->resources -- sorted by usage and resource number. */
 };
 
 #define giblorb_Inited_Magic (0xB7012BED) 
@@ -86,8 +80,19 @@ struct giblorb_map_struct {
 
 static int lib_inited = FALSE;
 
+static giblorb_err_t giblorb_initialize(void);
 static giblorb_err_t giblorb_initialize_map(giblorb_map_t *map);
-static int sortsplot(const void *p1, const void *p2);
+static void giblorb_qsort(giblorb_resdesc_t **list, int len);
+static giblorb_resdesc_t *giblorb_bsearch(giblorb_resdesc_t *sample, 
+    giblorb_resdesc_t **list, int len);
+static void *giblorb_malloc(glui32 len);
+static void *giblorb_realloc(void *ptr, glui32 len);
+static void giblorb_free(void *ptr);
+
+static giblorb_err_t giblorb_initialize()
+{
+    return giblorb_err_None;
+}
 
 giblorb_err_t giblorb_create_map(strid_t file, giblorb_map_t **newmap)
 {
@@ -102,6 +107,9 @@ giblorb_err_t giblorb_create_map(strid_t file, giblorb_map_t **newmap)
     *newmap = NULL;
     
     if (!lib_inited) {
+        err = giblorb_initialize();
+        if (err)
+            return err;
         lib_inited = TRUE;
     }
 
@@ -175,12 +183,17 @@ giblorb_err_t giblorb_create_map(strid_t file, giblorb_map_t **newmap)
         chunks. Now we allocate the map structure itself. */
     
     map = (giblorb_map_t *)giblorb_malloc(sizeof(giblorb_map_t));
+    if (!map) {
+        giblorb_free(chunks);
+        return giblorb_err_Alloc;
+    }
         
     map->inited = giblorb_Inited_Magic;
     map->file = file;
     map->chunks = chunks;
     map->numchunks = numchunks;
     map->resources = NULL;
+    map->ressorted = NULL;
     map->numresources = 0;
     /*map->releasenum = 0;
     map->zheader = NULL;
@@ -209,7 +222,7 @@ static giblorb_err_t giblorb_initialize_map(giblorb_map_t *map)
         function. If this returns an error, giblorb_destroy_map() will 
         be called. */
         
-    glui32 ix, jx;
+    int ix, jx;
     giblorb_result_t chunkres;
     giblorb_err_t err;
     char *ptr;
@@ -238,14 +251,19 @@ static giblorb_err_t giblorb_initialize_map(giblorb_map_t *map)
                 numres = giblorb_native4(ptr+0);
 
                 if (numres) {
-                    glui32 ix2;
+                    int ix2;
                     giblorb_resdesc_t *resources;
+                    giblorb_resdesc_t **ressorted;
                     
                     if (len != numres*12+4)
                         return giblorb_err_Format; /* bad length field */
                     
                     resources = (giblorb_resdesc_t *)giblorb_malloc(numres 
                         * sizeof(giblorb_resdesc_t));
+                    ressorted = (giblorb_resdesc_t **)giblorb_malloc(numres 
+                        * sizeof(giblorb_resdesc_t *));
+                    if (!ressorted || !resources)
+                        return giblorb_err_Alloc;
                     
                     ix2 = 0;
                     for (jx=0; jx<numres; jx++) {
@@ -257,7 +275,7 @@ static giblorb_err_t giblorb_initialize_map(giblorb_map_t *map)
                         respos = giblorb_native4(ptr+jx*12+12);
                         
                         while (ix2 < map->numchunks 
-			    && map->chunks[ix2].startpos < respos)
+                            && map->chunks[ix2].startpos < respos)
                             ix2++;
                         
                         if (ix2 >= map->numchunks 
@@ -266,14 +284,18 @@ static giblorb_err_t giblorb_initialize_map(giblorb_map_t *map)
                                 not match a real chunk */
                         
                         res->chunknum = ix2;
+                        
+                        ressorted[jx] = res;
                     }
                     
-                    /* Sort a resource list.  This makes it easy 
+                    /* Sort a resource list (actually a list of pointers to 
+                        structures in map->resources.) This makes it easy 
                         to find resources by usage and resource number. */
-		    qsort(resources, numres, sizeof(*resources), sortsplot);
+                    giblorb_qsort(ressorted, numres);
                     
                     map->numresources = numres;
                     map->resources = resources;
+                    map->ressorted = ressorted;
                 }
                 
                 giblorb_unload_chunk(map, ix);
@@ -288,7 +310,7 @@ static giblorb_err_t giblorb_initialize_map(giblorb_map_t *map)
 
 giblorb_err_t giblorb_destroy_map(giblorb_map_t *map)
 {
-    glui32 ix;
+    int ix;
     
     if (!map || !map->chunks || map->inited != giblorb_Inited_Magic)
         return giblorb_err_NotAMap;
@@ -312,7 +334,12 @@ giblorb_err_t giblorb_destroy_map(giblorb_map_t *map)
         giblorb_free(map->resources);
         map->resources = NULL;
     }
-        
+    
+    if (map->ressorted) {
+        giblorb_free(map->ressorted);
+        map->ressorted = NULL;
+    }
+    
     map->numresources = 0;
     
     map->file = NULL;
@@ -329,7 +356,7 @@ giblorb_err_t giblorb_load_chunk_by_type(giblorb_map_t *map,
     glui32 method, giblorb_result_t *res, glui32 type, 
     glui32 count)
 {
-    glui32 ix;
+    int ix;
     
     for (ix=0; ix < map->numchunks; ix++) {
         if (map->chunks[ix].type == type) {
@@ -351,7 +378,7 @@ giblorb_err_t giblorb_load_chunk_by_number(giblorb_map_t *map,
 {
     giblorb_chunkdesc_t *chu;
     
-    if (chunknum >= map->numchunks)
+    if (chunknum < 0 || chunknum >= map->numchunks)
         return giblorb_err_NotFound;
 
     chu = &(map->chunks[chunknum]);
@@ -370,6 +397,9 @@ giblorb_err_t giblorb_load_chunk_by_number(giblorb_map_t *map,
             if (!chu->ptr) {
                 glui32 readlen;
                 void *dat = giblorb_malloc(chu->len);
+                
+                if (!dat)
+                    return giblorb_err_Alloc;
                 
                 glk_stream_set_position(map->file, chu->datpos, 
                     seekmode_Start);
@@ -401,8 +431,7 @@ giblorb_err_t giblorb_load_resource(giblorb_map_t *map, glui32 method,
     sample.usage = usage;
     sample.resnum = resnum;
     
-    found = bsearch(&sample, map->resources, map->numresources,
-		    sizeof(*(map->resources)), sortsplot);
+    found = giblorb_bsearch(&sample, map->ressorted, map->numresources);
     
     if (!found)
         return giblorb_err_NotFound;
@@ -414,7 +443,7 @@ giblorb_err_t giblorb_unload_chunk(giblorb_map_t *map, glui32 chunknum)
 {
     giblorb_chunkdesc_t *chu;
     
-    if (chunknum >= map->numchunks)
+    if (chunknum < 0 || chunknum >= map->numchunks)
         return giblorb_err_NotFound;
 
     chu = &(map->chunks[chunknum]);
@@ -432,6 +461,7 @@ giblorb_err_t giblorb_count_resources(giblorb_map_t *map, glui32 usage,
 {
     int ix;
     int count;
+    glui32 val;
     glui32 minval, maxval;
     
     count = 0;
@@ -440,18 +470,19 @@ giblorb_err_t giblorb_count_resources(giblorb_map_t *map, glui32 usage,
     
     for (ix=0; ix<map->numresources; ix++) {
         if (map->resources[ix].usage == usage) {
-            glui32 val = map->resources[ix].resnum;
+            val = map->resources[ix].resnum;
             if (count == 0) {
+                count++;
                 minval = val;
                 maxval = val;
             }
             else {
+                count++;
                 if (val < minval)
                     minval = val;
                 if (val > maxval)
                     maxval = val;
             }
-	    count++;
         }
     }
     
@@ -467,12 +498,104 @@ giblorb_err_t giblorb_count_resources(giblorb_map_t *map, glui32 usage,
 
 /* Sorting and searching. */
 
-static int sortsplot(const void *p1, const void *p2)
+static int sortsplot(giblorb_resdesc_t *v1, giblorb_resdesc_t *v2)
 {
-    const giblorb_resdesc_t *v1 = (const giblorb_resdesc_t *) p1;
-    const giblorb_resdesc_t *v2 = (const giblorb_resdesc_t *) p2;
-    
-    if(v1->usage != v2->usage)
-	return v1->usage - v2->usage;
-    return v1->resnum - v2->resnum;
+    if (v1->usage < v2->usage)
+        return -1;
+    if (v1->usage > v2->usage)
+        return 1;
+    if (v1->resnum < v2->resnum)
+        return -1;
+    if (v1->resnum > v2->resnum)
+        return 1;
+    return 0;
 }
+
+static void giblorb_qsort(giblorb_resdesc_t **list, int len)
+{
+    int ix, jx, res;
+    giblorb_resdesc_t *tmpptr, *pivot;
+    
+    if (len < 6) {
+        /* The list is short enough for a bubble-sort. */
+        for (jx=len-1; jx>0; jx--) {
+            for (ix=0; ix<jx; ix++) {
+                res = sortsplot(list[ix], list[ix+1]);
+                if (res > 0) {
+                    tmpptr = list[ix];
+                    list[ix] = list[ix+1];
+                    list[ix+1] = tmpptr;
+                }
+            }
+        }
+    }
+    else {
+        /* Split the list. */
+        pivot = list[len/2];
+        ix=0;
+        jx=len;
+        while (1) {
+            while (ix < jx-1 && sortsplot(list[ix], pivot) < 0)
+                ix++;
+            while (ix < jx-1 && sortsplot(list[jx-1], pivot) > 0)
+                jx--;
+            if (ix >= jx-1)
+                break;
+            tmpptr = list[ix];
+            list[ix] = list[jx-1];
+            list[jx-1] = tmpptr;
+        }
+        ix++;
+        /* Sort the halves. */
+        giblorb_qsort(list+0, ix);
+        giblorb_qsort(list+ix, len-ix);
+    }
+}
+
+giblorb_resdesc_t *giblorb_bsearch(giblorb_resdesc_t *sample, 
+    giblorb_resdesc_t **list, int len)
+{
+    int top, bot, val, res;
+    
+    bot = 0;
+    top = len;
+    
+    while (bot < top) {
+        val = (top+bot) / 2;
+        res = sortsplot(list[val], sample);
+        if (res == 0)
+            return list[val];
+        if (res < 0) {
+            bot = val+1;
+        }
+        else {
+            top = val;
+        }
+    }
+    
+    return NULL;
+}
+
+
+/* Boring utility functions. If your platform doesn't support ANSI 
+    malloc(), feel free to edit these however you like. */
+
+#include <stdlib.h> /* The OS-native header file -- you can edit 
+    this too. */
+
+static void *giblorb_malloc(glui32 len)
+{
+    return malloc(len);
+}
+
+static void *giblorb_realloc(void *ptr, glui32 len)
+{
+    return realloc(ptr, len);
+}
+
+static void giblorb_free(void *ptr)
+{
+    free(ptr);
+}
+
+

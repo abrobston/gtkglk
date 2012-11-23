@@ -1,8 +1,8 @@
-/* gi_dispa.c: Dispatch layer for Glk API, version 0.6.1.
+/* gi_dispa.c: Dispatch layer for Glk API, version 0.7.4.
     Designed by Andrew Plotkin <erkyrath@eblong.com>
-    http://www.eblong.com/zarf/glk/index.html
+    http://eblong.com/zarf/glk/
 
-    This file is copyright 1998-2000 by Andrew Plotkin. You may copy,
+    This file is copyright 1998-2012 by Andrew Plotkin. You may copy,
     distribute, and incorporate it into your own programs, by any means
     and under any conditions, as long as you do not modify it. You may
     also modify this file, incorporate it into your own programs,
@@ -21,6 +21,9 @@
 #define NULL 0
 #endif
 
+#define NUMCLASSES   \
+    (sizeof(class_table) / sizeof(gidispatch_intconst_t))
+
 #define NUMINTCONSTANTS   \
     (sizeof(intconstant_table) / sizeof(gidispatch_intconst_t))
 
@@ -28,7 +31,15 @@
     (sizeof(function_table) / sizeof(gidispatch_function_t))
 
 /* The constants in this table must be ordered alphabetically. */
-static const gidispatch_intconst_t intconstant_table[] = {
+static gidispatch_intconst_t class_table[] = {
+    { "fileref", (2) },   /* "Qc" */
+    { "schannel", (3) },  /* "Qd" */
+    { "stream", (1) },    /* "Qb" */
+    { "window", (0) },    /* "Qa" */
+};
+
+/* The constants in this table must be ordered alphabetically. */
+static gidispatch_intconst_t intconstant_table[] = {
     { "evtype_Arrange", (5)  },
     { "evtype_CharInput", (2) },
     { "evtype_Hyperlink", (8) },
@@ -38,10 +49,13 @@ static const gidispatch_intconst_t intconstant_table[] = {
     { "evtype_Redraw", (6) },
     { "evtype_SoundNotify", (7) },
     { "evtype_Timer", (1) },
+    { "evtype_VolumeNotify", (9) },
+
     { "filemode_Read", (0x02) },
     { "filemode_ReadWrite", (0x03) },
     { "filemode_Write", (0x01) },
     { "filemode_WriteAppend", (0x05) },
+
     { "fileusage_BinaryMode", (0x000) },
     { "fileusage_Data", (0x00) },
     { "fileusage_InputRecord", (0x03) },
@@ -49,31 +63,40 @@ static const gidispatch_intconst_t intconstant_table[] = {
     { "fileusage_TextMode",   (0x100) },
     { "fileusage_Transcript", (0x02) },
     { "fileusage_TypeMask", (0x0f) },
+
     { "gestalt_CharInput", (1) },
     { "gestalt_CharOutput", (3) },
     { "gestalt_CharOutput_ApproxPrint", (1) },
     { "gestalt_CharOutput_CannotPrint", (0) },
     { "gestalt_CharOutput_ExactPrint", (2) },
+    { "gestalt_DateTime", (20) },
     { "gestalt_DrawImage", (7) },
     { "gestalt_Graphics", (6) },
     { "gestalt_GraphicsTransparency", (14) },
     { "gestalt_HyperlinkInput", (12) },
     { "gestalt_Hyperlinks", (11) },
     { "gestalt_LineInput", (2) },
+    { "gestalt_LineInputEcho", (17) },
+    { "gestalt_LineTerminatorKey", (19) },
+    { "gestalt_LineTerminators", (18) },
     { "gestalt_MouseInput", (4) },
+    { "gestalt_ResourceStream", (22) },
     { "gestalt_Sound", (8) },
+    { "gestalt_Sound2", (21) },
     { "gestalt_SoundMusic", (13) },
     { "gestalt_SoundNotify", (10) },
     { "gestalt_SoundVolume", (9) },
     { "gestalt_Timer", (5) },
+    { "gestalt_Unicode", (15) },
+    { "gestalt_UnicodeNorm", (16) },
     { "gestalt_Version", (0) },
-#ifdef GLK_MODULE_IMAGE
+
     { "imagealign_InlineCenter",  (0x03) },
     { "imagealign_InlineDown",  (0x02) },
     { "imagealign_MarginLeft",  (0x04) },
     { "imagealign_MarginRight",  (0x05) },
     { "imagealign_InlineUp",  (0x01) },
-#endif /* GLK_MODULE_IMAGE */
+
     { "keycode_Delete",   (0xfffffff9) },
     { "keycode_Down",     (0xfffffffb) },
     { "keycode_End",      (0xfffffff3) },
@@ -100,9 +123,11 @@ static const gidispatch_intconst_t intconstant_table[] = {
     { "keycode_Tab",      (0xfffffff7) },
     { "keycode_Unknown",  (0xffffffff) },
     { "keycode_Up",       (0xfffffffc) },
+
     { "seekmode_Current", (1) },
     { "seekmode_End", (2) },
     { "seekmode_Start", (0) },
+
     { "style_Alert", (5) },
     { "style_BlockQuote", (7) },
     { "style_Emphasized", (1) },
@@ -130,14 +155,19 @@ static const gidispatch_intconst_t intconstant_table[] = {
     { "stylehint_just_LeftFlush", (0) },
     { "stylehint_just_LeftRight", (1) },
     { "stylehint_just_RightFlush", (3) },
+
     { "winmethod_Above", (0x02)  },
     { "winmethod_Below", (0x03)  },
+    { "winmethod_Border", (0x000)  },
+    { "winmethod_BorderMask", (0x100)  },
     { "winmethod_DirMask", (0x0f) },
     { "winmethod_DivisionMask", (0xf0) },
     { "winmethod_Fixed", (0x10) },
     { "winmethod_Left",  (0x00)  },
+    { "winmethod_NoBorder", (0x100)  },
     { "winmethod_Proportional", (0x20) },
     { "winmethod_Right", (0x01)  },
+
     { "wintype_AllTypes", (0)  },
     { "wintype_Blank", (2)  },
     { "wintype_Graphics", (5)  },
@@ -147,7 +177,7 @@ static const gidispatch_intconst_t intconstant_table[] = {
 };
 
 /* The functions in this table must be ordered by id. */
-static const gidispatch_function_t function_table[] = {
+static gidispatch_function_t function_table[] = {
     { 0x0001, glk_exit, "exit" },
     { 0x0002, glk_set_interrupt_handler, "set_interrupt_handler" },
     { 0x0003, glk_tick, "tick" },
@@ -233,6 +263,13 @@ static const gidispatch_function_t function_table[] = {
     { 0x00FA, glk_schannel_stop, "schannel_stop" },
     { 0x00FB, glk_schannel_set_volume, "schannel_set_volume" },
     { 0x00FC, glk_sound_load_hint, "sound_load_hint" },
+#ifdef GLK_MODULE_SOUND2
+    { 0x00F4, glk_schannel_create_ext, "schannel_create_ext" },
+    { 0x00F7, glk_schannel_play_multi, "schannel_play_multi" },
+    { 0x00FD, glk_schannel_set_volume_ext, "schannel_set_volume_ext" },
+    { 0x00FE, glk_schannel_pause, "schannel_pause" },
+    { 0x00FF, glk_schannel_unpause, "schannel_unpause" },
+#endif /* GLK_MODULE_SOUND2 */
 #endif /* GLK_MODULE_SOUND */
 #ifdef GLK_MODULE_HYPERLINKS
     { 0x0100, glk_set_hyperlink, "set_hyperlink" },
@@ -240,11 +277,62 @@ static const gidispatch_function_t function_table[] = {
     { 0x0102, glk_request_hyperlink_event, "request_hyperlink_event" },
     { 0x0103, glk_cancel_hyperlink_event, "cancel_hyperlink_event" },
 #endif /* GLK_MODULE_HYPERLINKS */
+#ifdef GLK_MODULE_UNICODE
+    { 0x0120, glk_buffer_to_lower_case_uni, "buffer_to_lower_case_uni" },
+    { 0x0121, glk_buffer_to_upper_case_uni, "buffer_to_upper_case_uni" },
+    { 0x0122, glk_buffer_to_title_case_uni, "buffer_to_title_case_uni" },
+    { 0x0128, glk_put_char_uni, "put_char_uni" },
+    { 0x0129, glk_put_string_uni, "put_string_uni" },
+    { 0x012A, glk_put_buffer_uni, "put_buffer_uni" },
+    { 0x012B, glk_put_char_stream_uni, "put_char_stream_uni" },
+    { 0x012C, glk_put_string_stream_uni, "put_string_stream_uni" },
+    { 0x012D, glk_put_buffer_stream_uni, "put_buffer_stream_uni" },
+    { 0x0130, glk_get_char_stream_uni, "get_char_stream_uni" },
+    { 0x0131, glk_get_buffer_stream_uni, "get_buffer_stream_uni" },
+    { 0x0132, glk_get_line_stream_uni, "get_line_stream_uni" },
+    { 0x0138, glk_stream_open_file_uni, "stream_open_file_uni" },
+    { 0x0139, glk_stream_open_memory_uni, "stream_open_memory_uni" },
+    { 0x0140, glk_request_char_event_uni, "request_char_event_uni" },
+    { 0x0141, glk_request_line_event_uni, "request_line_event_uni" },
+#endif /* GLK_MODULE_UNICODE */
+#ifdef GLK_MODULE_UNICODE_NORM
+    { 0x0123, glk_buffer_canon_decompose_uni, "buffer_canon_decompose_uni" },
+    { 0x0124, glk_buffer_canon_normalize_uni, "buffer_canon_normalize_uni" },
+#endif /* GLK_MODULE_UNICODE_NORM */
+#ifdef GLK_MODULE_LINE_ECHO
+    { 0x0150, glk_set_echo_line_event, "set_echo_line_event" },
+#endif /* GLK_MODULE_LINE_ECHO */
+#ifdef GLK_MODULE_LINE_TERMINATORS
+    { 0x0151, glk_set_terminators_line_event, "set_terminators_line_event" },
+#endif /* GLK_MODULE_LINE_TERMINATORS */
+#ifdef GLK_MODULE_DATETIME
+    { 0x0160, glk_current_time, "current_time" },
+    { 0x0161, glk_current_simple_time, "current_simple_time" },
+    { 0x0168, glk_time_to_date_utc, "time_to_date_utc" },
+    { 0x0169, glk_time_to_date_local, "time_to_date_local" },
+    { 0x016A, glk_simple_time_to_date_utc, "simple_time_to_date_utc" },
+    { 0x016B, glk_simple_time_to_date_local, "simple_time_to_date_local" },
+    { 0x016C, glk_date_to_time_utc, "date_to_time_utc" },
+    { 0x016D, glk_date_to_time_local, "date_to_time_local" },
+    { 0x016E, glk_date_to_simple_time_utc, "date_to_simple_time_utc" },
+    { 0x016F, glk_date_to_simple_time_local, "date_to_simple_time_local" },
+#endif /* GLK_MODULE_DATETIME */
+#ifdef GLK_MODULE_RESOURCE_STREAM
+    { 0x0049, glk_stream_open_resource, "stream_open_resource" },
+    { 0x013A, glk_stream_open_resource_uni, "stream_open_resource_uni" },
+#endif /* GLK_MODULE_RESOURCE_STREAM */
 };
 
 glui32 gidispatch_count_classes()
 {
-    return 4;
+    return NUMCLASSES;
+}
+
+gidispatch_intconst_t *gidispatch_get_class(glui32 index)
+{
+    if (index < 0 || index >= NUMCLASSES)
+        return NULL;
+    return &(class_table[index]);
 }
 
 glui32 gidispatch_count_intconst()
@@ -254,9 +342,9 @@ glui32 gidispatch_count_intconst()
 
 gidispatch_intconst_t *gidispatch_get_intconst(glui32 index)
 {
-    if (index >= NUMINTCONSTANTS)
+    if (index < 0 || index >= NUMINTCONSTANTS)
         return NULL;
-    return (gidispatch_intconst_t *) &(intconstant_table[index]);
+    return &(intconstant_table[index]);
 }
 
 glui32 gidispatch_count_functions()
@@ -266,15 +354,15 @@ glui32 gidispatch_count_functions()
 
 gidispatch_function_t *gidispatch_get_function(glui32 index)
 {
-    if (index >= NUMFUNCTIONS)
+    if (index < 0 || index >= NUMFUNCTIONS)
         return NULL;
-    return (gidispatch_function_t *) &(function_table[index]);
+    return &(function_table[index]);
 }
 
 gidispatch_function_t *gidispatch_get_function_by_id(glui32 id)
 {
     int top, bot, val;
-    const gidispatch_function_t *func;
+    gidispatch_function_t *func;
     
     bot = 0;
     top = NUMFUNCTIONS;
@@ -283,7 +371,7 @@ gidispatch_function_t *gidispatch_get_function_by_id(glui32 id)
         val = (top+bot) / 2;
         func = &(function_table[val]);
         if (func->id == id)
-            return (gidispatch_function_t *) func;
+            return func;
         if (bot >= top-1)
             break;
         if (func->id < id) {
@@ -352,7 +440,7 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x0042: /* stream_open_file */
             return "4QcIuIu:Qb";
         case 0x0043: /* stream_open_memory */
-            return "4&+#!CnIuIu:Qb";
+            return "4&#!CnIuIu:Qb";
         case 0x0044: /* stream_close */
             return "2Qb<[2IuIu]:";
         case 0x0045: /* stream_set_position */
@@ -398,7 +486,7 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x0087: /* set_style_stream */
             return "2QbIu:";
         case 0x0090: /* get_char_stream */
-            return "2Qb:Iu";
+            return "2Qb:Is";
         case 0x0091: /* get_line_stream */
             return "3Qb<+#Cn:Iu"; 
         case 0x0092: /* get_buffer_stream */
@@ -433,6 +521,7 @@ char *gidispatch_prototype(glui32 funcnum)
             return "1Qa:";
         case 0x00D6: /* request_timer_events */
             return "1Iu:";
+
 #ifdef GLK_MODULE_IMAGE
         case 0x00E0: /* image_get_info */
             return "4Iu<Iu<Iu:Iu";
@@ -449,6 +538,7 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x00EB: /* window_set_background_color */
             return "2QaIu:";
 #endif /* GLK_MODULE_IMAGE */
+
 #ifdef GLK_MODULE_SOUND
         case 0x00F0: /* schannel_iterate */
             return "3Qd<Iu:Qd";
@@ -468,7 +558,21 @@ char *gidispatch_prototype(glui32 funcnum)
             return "2QdIu:";
         case 0x00FC: /* sound_load_hint */
             return "2IuIu:";
+
+#ifdef GLK_MODULE_SOUND2
+        case 0x00F4: /* schannel_create_ext */
+            return "3IuIu:Qd";
+        case 0x00F7: /* schannel_play_multi */
+            return "4>+#Qd>+#IuIu:Iu";
+        case 0x00FD: /* schannel_set_volume_ext */
+            return "4QdIuIuIu:";
+        case 0x00FE: /* schannel_pause */
+            return "1Qd:";
+        case 0x00FF: /* schannel_unpause */
+            return "1Qd:";
+#endif /* GLK_MODULE_SOUND2 */
 #endif /* GLK_MODULE_SOUND */
+
 #ifdef GLK_MODULE_HYPERLINKS
         case 0x0100: /* set_hyperlink */
             return "1Iu:";
@@ -479,7 +583,89 @@ char *gidispatch_prototype(glui32 funcnum)
         case 0x0103: /* cancel_hyperlink_event */
             return "1Qa:";
 #endif /* GLK_MODULE_HYPERLINKS */
+
+#ifdef GLK_MODULE_UNICODE
+        case 0x0120: /* buffer_to_lower_case_uni */
+            return "3&+#IuIu:Iu";
+        case 0x0121: /* buffer_to_upper_case_uni */
+            return "3&+#IuIu:Iu";
+        case 0x0122: /* buffer_to_title_case_uni */
+            return "4&+#IuIuIu:Iu";
+        case 0x0128: /* put_char_uni */
+            return "1Iu:";
+        case 0x0129: /* put_string_uni */
+            return "1U:";
+        case 0x012A: /* put_buffer_uni */
+            return "1>+#Iu:";
+        case 0x012B: /* put_char_stream_uni */
+            return "2QbIu:";
+        case 0x012C: /* put_string_stream_uni */
+            return "2QbU:";
+        case 0x012D: /* put_buffer_stream_uni */
+            return "2Qb>+#Iu:"; 
+        case 0x0130: /* get_char_stream_uni */
+            return "2Qb:Is";
+        case 0x0131: /* get_buffer_stream_uni */
+            return "3Qb<+#Iu:Iu"; 
+        case 0x0132: /* get_line_stream_uni */
+            return "3Qb<+#Iu:Iu"; 
+        case 0x0138: /* stream_open_file_uni */
+            return "4QcIuIu:Qb";
+        case 0x0139: /* stream_open_memory_uni */
+            return "4&#!IuIuIu:Qb";
+        case 0x0140: /* request_char_event_uni */
+            return "1Qa:";
+        case 0x0141: /* request_line_event_uni */
+            return "3Qa&+#!IuIu:";
+#endif /* GLK_MODULE_UNICODE */
             
+#ifdef GLK_MODULE_UNICODE_NORM
+        case 0x0123: /* buffer_canon_decompose_uni */
+            return "3&+#IuIu:Iu";
+        case 0x0124: /* buffer_canon_normalize_uni */
+            return "3&+#IuIu:Iu";
+#endif /* GLK_MODULE_UNICODE_NORM */
+
+#ifdef GLK_MODULE_LINE_ECHO
+        case 0x0150: /* set_echo_line_event */
+            return "2QaIu:";
+#endif /* GLK_MODULE_LINE_ECHO */
+
+#ifdef GLK_MODULE_LINE_TERMINATORS
+        case 0x0151: /* set_terminators_line_event */
+            return "2Qa>#Iu:";
+#endif /* GLK_MODULE_LINE_TERMINATORS */
+            
+#ifdef GLK_MODULE_DATETIME
+        case 0x0160: /* current_time */
+            return "1<+[3IsIuIs]:";
+        case 0x0161: /* current_simple_time */
+            return "2Iu:Is";
+        case 0x0168: /* time_to_date_utc */
+            return "2>+[3IsIuIs]<+[8IsIsIsIsIsIsIsIs]:";
+        case 0x0169: /* time_to_date_local */
+            return "2>+[3IsIuIs]<+[8IsIsIsIsIsIsIsIs]:";
+        case 0x016A: /* simple_time_to_date_utc */
+            return "3IsIu<+[8IsIsIsIsIsIsIsIs]:";
+        case 0x016B: /* simple_time_to_date_local */
+            return "3IsIu<+[8IsIsIsIsIsIsIsIs]:";
+        case 0x016C: /* date_to_time_utc */
+            return "2>+[8IsIsIsIsIsIsIsIs]<+[3IsIuIs]:";
+        case 0x016D: /* date_to_time_local */
+            return "2>+[8IsIsIsIsIsIsIsIs]<+[3IsIuIs]:";
+        case 0x016E: /* date_to_simple_time_utc */
+            return "3>+[8IsIsIsIsIsIsIsIs]Iu:Is";
+        case 0x016F: /* date_to_simple_time_local */
+            return "3>+[8IsIsIsIsIsIsIsIs]Iu:Is";
+#endif /* GLK_MODULE_DATETIME */
+
+#ifdef GLK_MODULE_RESOURCE_STREAM
+        case 0x0049: /* stream_open_resource */
+            return "3IuIu:Qb";
+        case 0x013A: /* stream_open_resource_uni */
+            return "3IuIu:Qb";
+#endif /* GLK_MODULE_RESOURCE_STREAM */
+
         default:
             return NULL;
     }
@@ -697,7 +883,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             glk_fileref_delete_file(arglist[0].opaqueref);
             break;
         case 0x0067: /* fileref_does_file_exist */
-            arglist[1].uint = glk_fileref_does_file_exist(arglist[0].opaqueref);
+            arglist[2].uint = glk_fileref_does_file_exist(arglist[0].opaqueref);
             break;
         case 0x0068: /* fileref_create_from_fileref */
             arglist[4].opaqueref = glk_fileref_create_from_fileref(arglist[0].uint, 
@@ -736,7 +922,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             glk_set_style_stream(arglist[0].opaqueref, arglist[1].uint);
             break;
         case 0x0090: /* get_char_stream */
-            arglist[2].uint = glk_get_char_stream(arglist[0].opaqueref);
+            arglist[2].sint = glk_get_char_stream(arglist[0].opaqueref);
             break;
         case 0x0091: /* get_line_stream */
             if (arglist[1].ptrflag) 
@@ -842,6 +1028,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
         case 0x00D6: /* request_timer_events */
             glk_request_timer_events(arglist[0].uint);
             break;
+
 #ifdef GLK_MODULE_IMAGE
         case 0x00E0: /* image_get_info */
             {
@@ -895,6 +1082,7 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             glk_window_set_background_color(arglist[0].opaqueref, arglist[1].uint);
             break;
 #endif /* GLK_MODULE_IMAGE */
+
 #ifdef GLK_MODULE_SOUND
         case 0x00F0: /* schannel_iterate */
             if (arglist[1].ptrflag) 
@@ -927,7 +1115,33 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
         case 0x00FC: /* sound_load_hint */
             glk_sound_load_hint(arglist[0].uint, arglist[1].uint);
             break;
+
+#ifdef GLK_MODULE_SOUND2
+        case 0x00F4: /* schannel_create_ext */
+            arglist[3].opaqueref = glk_schannel_create_ext(arglist[0].uint, arglist[1].uint);
+            break;
+        case 0x00F7: /* schannel_play_multi */
+            if (arglist[0].ptrflag && arglist[3].ptrflag)
+                arglist[8].uint = glk_schannel_play_multi(arglist[1].array, arglist[2].uint, arglist[4].array, arglist[5].uint, arglist[6].uint);
+            else if (arglist[0].ptrflag)
+                arglist[6].uint = glk_schannel_play_multi(arglist[1].array, arglist[2].uint, NULL, 0, arglist[4].uint);
+            else if (arglist[1].ptrflag)
+                arglist[6].uint = glk_schannel_play_multi(NULL, 0, arglist[2].array, arglist[3].uint, arglist[4].uint);
+            else
+                arglist[4].uint = glk_schannel_play_multi(NULL, 0, NULL, 0, arglist[2].uint);
+            break;
+        case 0x00FD: /* schannel_set_volume_ext */
+            glk_schannel_set_volume_ext(arglist[0].opaqueref, arglist[1].uint, arglist[2].uint, arglist[3].uint);
+            break;
+        case 0x00FE: /* schannel_pause */
+            glk_schannel_pause(arglist[0].opaqueref);
+            break;
+        case 0x00FF: /* schannel_unpause */
+            glk_schannel_unpause(arglist[0].opaqueref);
+            break;
+#endif /* GLK_MODULE_SOUND2 */
 #endif /* GLK_MODULE_SOUND */
+
 #ifdef GLK_MODULE_HYPERLINKS
         case 0x0100: /* set_hyperlink */
             glk_set_hyperlink(arglist[0].uint);
@@ -943,6 +1157,342 @@ void gidispatch_call(glui32 funcnum, glui32 numargs, gluniversal_t *arglist)
             break;
 #endif /* GLK_MODULE_HYPERLINKS */
             
+#ifdef GLK_MODULE_UNICODE
+        case 0x0120: /* buffer_to_lower_case_uni */
+            if (arglist[0].ptrflag) 
+                arglist[5].uint = glk_buffer_to_lower_case_uni(arglist[1].array, arglist[2].uint, arglist[3].uint);
+            else
+                arglist[3].uint = glk_buffer_to_lower_case_uni(NULL, 0, arglist[1].uint);
+            break;
+        case 0x0121: /* buffer_to_upper_case_uni */
+            if (arglist[0].ptrflag) 
+                arglist[5].uint = glk_buffer_to_upper_case_uni(arglist[1].array, arglist[2].uint, arglist[3].uint);
+            else
+                arglist[3].uint = glk_buffer_to_upper_case_uni(NULL, 0, arglist[1].uint);
+            break;
+        case 0x0122: /* buffer_to_title_case_uni */
+            if (arglist[0].ptrflag) 
+                arglist[6].uint = glk_buffer_to_title_case_uni(arglist[1].array, arglist[2].uint, arglist[3].uint, arglist[4].uint);
+            else
+                arglist[4].uint = glk_buffer_to_title_case_uni(NULL, 0, arglist[1].uint, arglist[2].uint);
+            break;
+        case 0x0128: /* put_char_uni */
+            glk_put_char_uni(arglist[0].uint);
+            break;
+        case 0x0129: /* put_string_uni */
+            glk_put_string_uni(arglist[0].unicharstr);
+            break;
+        case 0x012A: /* put_buffer_uni */
+            if (arglist[0].ptrflag) 
+                glk_put_buffer_uni(arglist[1].array, arglist[2].uint);
+            else
+                glk_put_buffer_uni(NULL, 0);
+            break;
+        case 0x012B: /* put_char_stream_uni */
+            glk_put_char_stream_uni(arglist[0].opaqueref, arglist[1].uint);
+            break;
+        case 0x012C: /* put_string_stream_uni */
+            glk_put_string_stream_uni(arglist[0].opaqueref, arglist[1].unicharstr);
+            break;
+        case 0x012D: /* put_buffer_stream_uni */
+            if (arglist[1].ptrflag) 
+                glk_put_buffer_stream_uni(arglist[0].opaqueref, 
+                    arglist[2].array, arglist[3].uint);
+            else
+                glk_put_buffer_stream_uni(arglist[0].opaqueref, 
+                    NULL, 0);
+            break;
+        case 0x0130: /* get_char_stream_uni */
+            arglist[2].sint = glk_get_char_stream_uni(arglist[0].opaqueref);
+            break;
+        case 0x0131: /* get_buffer_stream_uni */
+            if (arglist[1].ptrflag) 
+                arglist[5].uint = glk_get_buffer_stream_uni(arglist[0].opaqueref, 
+                    arglist[2].array, arglist[3].uint);
+            else
+                arglist[3].uint = glk_get_buffer_stream_uni(arglist[0].opaqueref, 
+                    NULL, 0);
+            break;
+        case 0x0132: /* get_line_stream_uni */
+            if (arglist[1].ptrflag) 
+                arglist[5].uint = glk_get_line_stream_uni(arglist[0].opaqueref, 
+                    arglist[2].array, arglist[3].uint);
+            else
+                arglist[3].uint = glk_get_line_stream_uni(arglist[0].opaqueref, 
+                    NULL, 0);
+            break;
+        case 0x0138: /* stream_open_file_uni */
+            arglist[4].opaqueref = glk_stream_open_file_uni(arglist[0].opaqueref, arglist[1].uint, 
+                arglist[2].uint);
+            break;
+        case 0x0139: /* stream_open_memory_uni */
+            if (arglist[0].ptrflag) 
+                arglist[6].opaqueref = glk_stream_open_memory_uni(arglist[1].array, 
+                    arglist[2].uint, arglist[3].uint, arglist[4].uint);
+            else
+                arglist[4].opaqueref = glk_stream_open_memory_uni(NULL, 
+                    0, arglist[1].uint, arglist[2].uint);
+            break;
+        case 0x0140: /* request_char_event_uni */
+            glk_request_char_event_uni(arglist[0].opaqueref);
+            break;
+        case 0x0141: /* request_line_event_uni */
+            if (arglist[1].ptrflag)
+                glk_request_line_event_uni(arglist[0].opaqueref, arglist[2].array,
+                    arglist[3].uint, arglist[4].uint);
+            else
+                glk_request_line_event_uni(arglist[0].opaqueref, NULL,
+                    0, arglist[2].uint);
+            break;
+#endif /* GLK_MODULE_UNICODE */
+
+#ifdef GLK_MODULE_UNICODE_NORM
+        case 0x0123: /* buffer_canon_decompose_uni */
+            if (arglist[0].ptrflag) 
+                arglist[5].uint = glk_buffer_canon_decompose_uni(arglist[1].array, arglist[2].uint, arglist[3].uint);
+            else
+                arglist[3].uint = glk_buffer_canon_decompose_uni(NULL, 0, arglist[1].uint);
+            break;
+        case 0x0124: /* buffer_canon_normalize_uni */
+            if (arglist[0].ptrflag) 
+                arglist[5].uint = glk_buffer_canon_normalize_uni(arglist[1].array, arglist[2].uint, arglist[3].uint);
+            else
+                arglist[3].uint = glk_buffer_canon_normalize_uni(NULL, 0, arglist[1].uint);
+            break;
+#endif /* GLK_MODULE_UNICODE_NORM */
+            
+#ifdef GLK_MODULE_LINE_ECHO
+        case 0x0150: /* set_echo_line_event */
+            glk_set_echo_line_event(arglist[0].opaqueref, arglist[1].uint);
+            break;
+#endif /* GLK_MODULE_LINE_ECHO */
+
+#ifdef GLK_MODULE_LINE_TERMINATORS
+        case 0x0151: /* set_terminators_line_event */
+            if (arglist[1].ptrflag) 
+                glk_set_terminators_line_event(arglist[0].opaqueref, 
+                    arglist[2].array, arglist[3].uint);
+            else
+                glk_set_terminators_line_event(arglist[0].opaqueref, 
+                    NULL, 0);
+            break;
+#endif /* GLK_MODULE_LINE_TERMINATORS */
+            
+#ifdef GLK_MODULE_DATETIME
+        case 0x0160: /* current_time */
+            if (arglist[0].ptrflag) {
+                glktimeval_t dat;
+                glk_current_time(&dat);
+                arglist[1].sint = dat.high_sec;
+                arglist[2].uint = dat.low_sec;
+                arglist[3].sint = dat.microsec;
+            }
+            else {
+                glk_current_time(NULL);
+            }
+            break;
+        case 0x0161: /* current_simple_time */
+            arglist[2].sint = glk_current_simple_time(arglist[0].uint);
+            break;
+        case 0x0168: /* time_to_date_utc */ {
+            glktimeval_t timeval;
+            glktimeval_t *timeptr = NULL;
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            int ix = 0;
+            if (arglist[ix++].ptrflag) {
+                timeptr = &timeval;
+                timeval.high_sec = arglist[ix++].sint;
+                timeval.low_sec = arglist[ix++].uint;
+                timeval.microsec = arglist[ix++].sint;
+            }
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+            }
+            glk_time_to_date_utc(timeptr, dateptr);
+            if (dateptr) {
+                arglist[ix++].sint = date.year;
+                arglist[ix++].sint = date.month;
+                arglist[ix++].sint = date.day;
+                arglist[ix++].sint = date.weekday;
+                arglist[ix++].sint = date.hour;
+                arglist[ix++].sint = date.minute;
+                arglist[ix++].sint = date.second;
+                arglist[ix++].sint = date.microsec;
+            }
+            }
+            break;
+        case 0x0169: /* time_to_date_local */ {
+            glktimeval_t timeval;
+            glktimeval_t *timeptr = NULL;
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            int ix = 0;
+            if (arglist[ix++].ptrflag) {
+                timeptr = &timeval;
+                timeval.high_sec = arglist[ix++].sint;
+                timeval.low_sec = arglist[ix++].uint;
+                timeval.microsec = arglist[ix++].sint;
+            }
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+            }
+            glk_time_to_date_local(timeptr, dateptr);
+            if (dateptr) {
+                arglist[ix++].sint = date.year;
+                arglist[ix++].sint = date.month;
+                arglist[ix++].sint = date.day;
+                arglist[ix++].sint = date.weekday;
+                arglist[ix++].sint = date.hour;
+                arglist[ix++].sint = date.minute;
+                arglist[ix++].sint = date.second;
+                arglist[ix++].sint = date.microsec;
+            }
+            }
+            break;
+        case 0x016A: /* simple_time_to_date_utc */ {
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            int ix = 2;
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+            }
+            glk_simple_time_to_date_utc(arglist[0].sint, arglist[1].uint, dateptr);
+            if (dateptr) {
+                arglist[ix++].sint = date.year;
+                arglist[ix++].sint = date.month;
+                arglist[ix++].sint = date.day;
+                arglist[ix++].sint = date.weekday;
+                arglist[ix++].sint = date.hour;
+                arglist[ix++].sint = date.minute;
+                arglist[ix++].sint = date.second;
+                arglist[ix++].sint = date.microsec;
+            }
+            }
+            break;
+        case 0x016B: /* simple_time_to_date_local */ {
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            int ix = 2;
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+            }
+            glk_simple_time_to_date_local(arglist[0].sint, arglist[1].uint, dateptr);
+            if (dateptr) {
+                arglist[ix++].sint = date.year;
+                arglist[ix++].sint = date.month;
+                arglist[ix++].sint = date.day;
+                arglist[ix++].sint = date.weekday;
+                arglist[ix++].sint = date.hour;
+                arglist[ix++].sint = date.minute;
+                arglist[ix++].sint = date.second;
+                arglist[ix++].sint = date.microsec;
+            }
+            }
+            break;
+        case 0x016C: /* date_to_time_utc */ {
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            glktimeval_t timeval;
+            glktimeval_t *timeptr = NULL;
+            int ix = 0;
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+                date.year = arglist[ix++].sint;
+                date.month = arglist[ix++].sint;
+                date.day = arglist[ix++].sint;
+                date.weekday = arglist[ix++].sint;
+                date.hour = arglist[ix++].sint;
+                date.minute = arglist[ix++].sint;
+                date.second = arglist[ix++].sint;
+                date.microsec = arglist[ix++].sint;
+            }
+            if (arglist[ix++].ptrflag) {
+                timeptr = &timeval;
+            }
+            glk_date_to_time_utc(dateptr, timeptr);
+            if (timeptr) {
+                arglist[ix++].sint = timeval.high_sec;
+                arglist[ix++].uint = timeval.low_sec;
+                arglist[ix++].sint = timeval.microsec;
+            }
+            }
+            break;
+        case 0x016D: /* date_to_time_local */ {
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            glktimeval_t timeval;
+            glktimeval_t *timeptr = NULL;
+            int ix = 0;
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+                date.year = arglist[ix++].sint;
+                date.month = arglist[ix++].sint;
+                date.day = arglist[ix++].sint;
+                date.weekday = arglist[ix++].sint;
+                date.hour = arglist[ix++].sint;
+                date.minute = arglist[ix++].sint;
+                date.second = arglist[ix++].sint;
+                date.microsec = arglist[ix++].sint;
+            }
+            if (arglist[ix++].ptrflag) {
+                timeptr = &timeval;
+            }
+            glk_date_to_time_local(dateptr, timeptr);
+            if (timeptr) {
+                arglist[ix++].sint = timeval.high_sec;
+                arglist[ix++].uint = timeval.low_sec;
+                arglist[ix++].sint = timeval.microsec;
+            }
+            }
+            break;
+        case 0x016E: /* date_to_simple_time_utc */ {
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            int ix = 0;
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+                date.year = arglist[ix++].sint;
+                date.month = arglist[ix++].sint;
+                date.day = arglist[ix++].sint;
+                date.weekday = arglist[ix++].sint;
+                date.hour = arglist[ix++].sint;
+                date.minute = arglist[ix++].sint;
+                date.second = arglist[ix++].sint;
+                date.microsec = arglist[ix++].sint;
+            }
+            arglist[ix+2].sint = glk_date_to_simple_time_utc(dateptr, arglist[ix].uint);
+            }
+            break;
+        case 0x016F: /* date_to_simple_time_local */ {
+            glkdate_t date;
+            glkdate_t *dateptr = NULL;
+            int ix = 0;
+            if (arglist[ix++].ptrflag) {
+                dateptr = &date;
+                date.year = arglist[ix++].sint;
+                date.month = arglist[ix++].sint;
+                date.day = arglist[ix++].sint;
+                date.weekday = arglist[ix++].sint;
+                date.hour = arglist[ix++].sint;
+                date.minute = arglist[ix++].sint;
+                date.second = arglist[ix++].sint;
+                date.microsec = arglist[ix++].sint;
+            }
+            arglist[ix+2].sint = glk_date_to_simple_time_local(dateptr, arglist[ix].uint);
+            }
+            break;
+#endif /* GLK_MODULE_DATETIME */
+
+#ifdef GLK_MODULE_RESOURCE_STREAM
+        case 0x0049: /* stream_open_resource */
+            arglist[3].opaqueref = glk_stream_open_resource(arglist[0].uint, arglist[1].uint);
+            break;
+        case 0x013A: /* stream_open_resource_uni */
+            arglist[3].opaqueref = glk_stream_open_resource_uni(arglist[0].uint, arglist[1].uint);
+            break;
+#endif /* GLK_MODULE_RESOURCE_STREAM */
+
         default:
             /* do nothing */
             break;
