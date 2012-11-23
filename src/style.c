@@ -495,9 +495,7 @@ void gglk_set_tags(GtkTextView *view, struct glk_stylehint_struct *stylehints)
 }
 
 
-
-
-static inline glui32 gglk_style_measure_tag(GtkTextTag *tag,
+static inline glui32 gglk_style_measure_tag_unconverted(GtkTextTag *tag,
 				     glui32 hint, glsi32 *result)
 {
     PangoWeight weight;
@@ -584,10 +582,31 @@ static inline glui32 gglk_style_measure_tag(GtkTextTag *tag,
     }
 }
 
+static inline glui32 gglk_style_measure_tag(GtkTextTag *tag,
+				     glui32 hint, glui32 *result)
+{
+    glsi32 unchecked_result;
+    glui32 return_value;
 
+    return_value = gglk_style_measure_tag_unconverted(tag, hint,
+            &unchecked_result);
+
+    /* We have to make this unsigned.  For now, punt and make it
+     * zero.  TODO: this might be a bug. */
+    if (unchecked_result < 0)
+    {
+        *result = 0;
+    }
+    else
+    {
+        *result = unchecked_result;
+    }
+
+    return return_value;
+}
 
 glui32 gglk_style_measure(GtkTextTagTable *table,
-			  glui32 styl, glui32 hint, glsi32 *result)
+			  glui32 styl, glui32 hint, glui32 *result)
 {
     GtkTextTag *tag;
 

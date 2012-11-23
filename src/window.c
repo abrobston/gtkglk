@@ -1302,24 +1302,24 @@ glui32 glk_style_distinguish(winid_t win, glui32 styl1, glui32 styl2)
 
     int i;
     for(i = 0; i < stylehint_NUMHINTS; i++) {
-	glsi32 a, b;
-	glk_style_measure(win, styl1, i, &a);
-	glk_style_measure(win, styl2, i, &b);
-	if(a != b) {
-	    if(i == stylehint_Justification && 
-	       ((a == stylehint_just_LeftFlush &&
-		 b == stylehint_just_LeftRight) ||
-		(b == stylehint_just_LeftFlush &&
-		 a == stylehint_just_LeftRight))) {
-		continue;
-	    }
-	    return TRUE;
-	}
+        glui32 a, b;
+        glk_style_measure(win, styl1, i, &a);
+        glk_style_measure(win, styl2, i, &b);
+        if(a != b) {
+            if(i == stylehint_Justification && 
+               ((a == stylehint_just_LeftFlush &&
+             b == stylehint_just_LeftRight) ||
+            (b == stylehint_just_LeftFlush &&
+             a == stylehint_just_LeftRight))) {
+            continue;
+            }
+            return TRUE;
+        }
     }
     return FALSE;
 }
 
-glui32 glk_style_measure(winid_t win, glui32 styl, glui32 hint, glsi32 *result)
+glui32 glk_style_measure(winid_t win, glui32 styl, glui32 hint, glui32 *result)
 {
     GtkTextView *view = GTK_TEXT_VIEW(win->gbuffer);
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(view);

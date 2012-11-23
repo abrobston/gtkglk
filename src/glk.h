@@ -26,16 +26,22 @@ typedef int32_t glsi32;
 /* These are the compile-time conditionals that reveal various Glk optional
     modules. Note that if GLK_MODULE_SOUND2 is defined, GLK_MODULE_SOUND
     must be also. */
+/*
 #define GLK_MODULE_LINE_ECHO
 #define GLK_MODULE_LINE_TERMINATORS
 #define GLK_MODULE_UNICODE
 #define GLK_MODULE_UNICODE_NORM
+*/
 #define GLK_MODULE_IMAGE
 #define GLK_MODULE_SOUND
+/*
 #define GLK_MODULE_SOUND2
+*/
 #define GLK_MODULE_HYPERLINKS
+/*
 #define GLK_MODULE_DATETIME
 #define GLK_MODULE_RESOURCE_STREAM
+*/
 
 /* These types are opaque object identifiers. They're pointers to opaque
     C structures, which are defined differently by each library. */
@@ -183,7 +189,9 @@ typedef struct stream_result_struct {
 #define stylehint_TextColor (7)
 #define stylehint_BackColor (8)
 #define stylehint_ReverseColor (9)
-#define stylehint_NUMHINTS (10)
+/* Adding back in for now -- was in the prior version: */
+#define stylehint_Direction (10)
+#define stylehint_NUMHINTS (11)
 
 #define   stylehint_just_LeftFlush (0)
 #define   stylehint_just_LeftRight (1)

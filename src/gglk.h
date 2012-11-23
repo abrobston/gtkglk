@@ -234,7 +234,7 @@ gboolean gglk_font_transform(GValue *value, GValue *tvalue,
 glui32 gglk_style_distinguish(GtkTextTagTable *table, GtkTextView *view,
 			      glui32 styl1, glui32 styl2) PRIVATE;
 glui32 gglk_style_measure(GtkTextTagTable *table,
-			  glui32 styl, glui32 hint, glsi32 *result) PRIVATE;
+			  glui32 styl, glui32 hint, glui32 *result) PRIVATE;
 void gglk_update_tag_table(struct glk_stylehint_struct *stylehints,
 			   int style, int hint) PRIVATE;
 void gglk_set_background_color(GtkTextView *view,
