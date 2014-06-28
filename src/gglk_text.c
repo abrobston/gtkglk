@@ -775,7 +775,7 @@ void gglk_text_line_input_set(GglkText *tb, int length,
     /* Add new text */
     gtk_text_buffer_get_end_iter(tb->buffer, &b);
     gtk_text_buffer_move_mark(tb->buffer, tb->startedit, &b);
-    line_utf8 = g_ucs4_to_utf8(text, -1, NULL, NULL, NULL);
+    line_utf8 = g_uni_to_utf8(text, -1, NULL, NULL, NULL);
     gtk_text_buffer_insert(tb->buffer, &b, line_utf8, -1);
     g_free(line_utf8);
 
@@ -809,15 +809,15 @@ gunichar *gglk_text_line_input_get(GglkText *tb)
 {
     GtkTextIter b, e;
     gchar *line_utf8, *line_utf8_normal;
-    gunichar *line_ucs4;
+    gunichar *line_uni;
     glong len;
     gtk_text_buffer_get_iter_at_mark(tb->buffer, &b, tb->startedit);
     gtk_text_buffer_get_iter_at_mark(tb->buffer, &e, tb->endedit);
     line_utf8 = gtk_text_buffer_get_text(tb->buffer, &b, &e, FALSE);
     line_utf8_normal = g_utf8_normalize(line_utf8, -1, G_NORMALIZE_NFC);
-    line_ucs4 = g_utf8_to_ucs4(line_utf8, -1, NULL, &len, NULL);
+    line_uni = g_utf8_to_uni(line_utf8, -1, NULL, &len, NULL);
     g_free(line_utf8); line_utf8 = NULL;
-    return line_ucs4;
+    return line_uni;
 }
 
 

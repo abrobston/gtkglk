@@ -97,7 +97,7 @@ static void gglk_textbuffer_put_buffer(GtkWidget *widget,
 {
     GglkTextBuffer *tb = GGLK_TEXTBUFFER(widget);
     char *utfstr;
-    utfstr = g_ucs4_to_utf8(buf, len, NULL, NULL, NULL);
+    utfstr = g_uni_to_utf8(buf, len, NULL, NULL, NULL);
     gtk_text_buffer_insert_with_tags(tb->base.buffer, &tb->base.iter,
 				     utfstr, -1,
 				     tb->base.style_tag,

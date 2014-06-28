@@ -197,7 +197,7 @@ static void gglk_win_name_char(GtkSpinButton *spinbutton,
     } else if(v == 32) {
 	strcpy(name, "(space)");
     } else if(v > 32 && v <= 255) {
-	char *utf = g_ucs4_to_utf8(&v, 1, NULL, NULL, NULL);
+	char *utf = g_uni_to_utf8(&v, 1, NULL, NULL, NULL);
 	sprintf(name, "(%s)", utf);
 	g_free(utf);
     } else {
