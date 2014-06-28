@@ -52,11 +52,11 @@ void glk_put_char(unsigned char ch) { glk_put_char_stream(cur_str, ch); }
 void glk_put_string(char *s)        { glk_put_string_stream(cur_str, s); }
 void glk_put_buffer(char *buf, glui32 len) { glk_put_buffer_stream(cur_str, buf, len); }
 void glk_put_char_ucs4(glui32 ch)   { glk_put_char_stream_ucs4(cur_str, ch); }
+void glk_put_char_uni(glui32 ch)    { glk_put_char_ucs4(ch); }
 void glk_put_string_ucs4(glui32 *s) { glk_put_string_stream_ucs4(cur_str, s); }
 void glk_put_buffer_ucs4(glui32 *buf, glui32 len) { glk_put_buffer_stream_ucs4(cur_str, buf, len); }
 void glk_set_style(glui32 styl)     { glk_set_style_stream(cur_str, styl); }
 void glk_set_hyperlink(glui32 linkval) { glk_set_hyperlink_stream(cur_str, linkval); }
-
 
 /* Translate character-oriented functions to buffer-oriented ones */
 glsi32 glk_get_char_stream(strid_t str)
@@ -83,6 +83,11 @@ void glk_put_char_stream(strid_t str, unsigned char ch)
 void glk_put_char_stream_ucs4(strid_t str, glui32 ch)
 {
     glk_put_buffer_stream_ucs4(str, &ch, 1);
+}
+
+void glk_put_char_stream_uni(strid_t str, glui32 ch)
+{
+    glk_put_char_stream_ucs4(str, ch);
 }
 
 void glk_put_string_stream(strid_t str, char *s)
