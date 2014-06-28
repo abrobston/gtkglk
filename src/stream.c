@@ -61,7 +61,7 @@ MAKE_ITER(strid_t, stream)
 
 
 
-static void gglk_put_buffer_stream_uni(strid_t str, const glui32 *buf, glui32 len, gboolean eightbit);
+static void gglk_put_buffer_stream_ucs4(strid_t str, const glui32 *buf, glui32 len, gboolean eightbit);
 
 #include "gui_stream.c"
 
@@ -338,7 +338,7 @@ static gboolean gglk_stream_check_write(strid_t str, const char *func)
 }
 
 
-static glui32 gglk_get_buffer_stream_uni(strid_t str, glui32 len,
+static glui32 gglk_get_buffer_stream_ucs4(strid_t str, glui32 len,
 						 glui32 * restrict buf32,
 						 unsigned char * restrict buf8)
 {
@@ -395,14 +395,14 @@ glui32 glk_get_buffer_stream(strid_t str, char *buf, glui32 len)
 {
     GGLK_STR_TYPES(str, return 0, strFile, strMem);
     if(!gglk_stream_check_read(str, __func__)) return 0;
-    return gglk_get_buffer_stream_uni(str, len, NULL, buf);
+    return gglk_get_buffer_stream_ucs4(str, len, NULL, buf);
 }
 
-glui32 glk_get_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
+glui32 glk_get_buffer_stream_ucs4(strid_t str, glui32 *buf, glui32 len)
 {
     GGLK_STR_TYPES(str, return 0, strFile, strMem);
     if(!gglk_stream_check_read(str, __func__)) return 0;
-    return gglk_get_buffer_stream_uni(str, len, buf, NULL);
+    return gglk_get_buffer_stream_ucs4(str, len, buf, NULL);
 }
 
 
@@ -424,18 +424,18 @@ void glk_put_buffer_stream(strid_t str, char *buf, glui32 len)
     for(i = 0; i < len; i++)
 	unistr[i] = (unsigned char) buf[i];
 
-    gglk_put_buffer_stream_uni(str, unistr, len, TRUE);
+    gglk_put_buffer_stream_ucs4(str, unistr, len, TRUE);
     g_free(unistr);
 }
 
 
 
-void glk_put_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
+void glk_put_buffer_stream_ucs4(strid_t str, glui32 *buf, glui32 len)
 {
     gglk_validstr(str, return);
     if(!gglk_stream_check_write(str, __func__)) return;
 
-    gglk_put_buffer_stream_uni(str, buf, len, FALSE);
+    gglk_put_buffer_stream_ucs4(str, buf, len, FALSE);
 }
 
 
@@ -443,8 +443,8 @@ void glk_put_buffer_stream_uni(strid_t str, glui32 *buf, glui32 len)
 /* assumes gglk_validstr and gglk_stream_check_write have already been done.
    eightbit is TRUE if the output should be done one byte per character -
       need to keep track of eightbit, because glk_put_buffer() should write
-      one byte to binary streams, and glk_put_bufer_uni() should write four */
-static void gglk_put_buffer_stream_uni(strid_t str,
+      one byte to binary streams, and glk_put_bufer_ucs4() should write four */
+static void gglk_put_buffer_stream_ucs4(strid_t str,
 					const glui32 * restrict buf,
 					glui32 len, gboolean eightbit)
 {
@@ -456,7 +456,7 @@ static void gglk_put_buffer_stream_uni(strid_t str,
     str->writecount += len;
 
     if(str->echo)
-	gglk_put_buffer_stream_uni(str->echo, buf, len, eightbit);
+	gglk_put_buffer_stream_ucs4(str->echo, buf, len, eightbit);
 
     if(str->length != -1) {
 	if(eightbit) {
@@ -475,7 +475,7 @@ static void gglk_put_buffer_stream_uni(strid_t str,
     case strFile:
 	fseek(str->file, str->start + str->index, SEEK_SET);
 	if(str->usage & fileusage_TextMode) {  /* for text, UTF-8 */
-	    utfstr = g_uni_to_utf8(buf, len, NULL, NULL, NULL);
+	    utfstr = g_ucs4_to_utf8(buf, len, NULL, NULL, NULL);
 	    fwrite(utfstr, 1, strlen(utfstr), str->file);
 	    g_free(utfstr);
 	} else if(eightbit) {    /* for 8-bit binary, One byte per character */

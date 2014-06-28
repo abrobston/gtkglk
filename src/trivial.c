@@ -51,11 +51,12 @@ void glk_set_window(winid_t win)
 void glk_put_char(unsigned char ch) { glk_put_char_stream(cur_str, ch); }
 void glk_put_string(char *s)        { glk_put_string_stream(cur_str, s); }
 void glk_put_buffer(char *buf, glui32 len) { glk_put_buffer_stream(cur_str, buf, len); }
-void glk_put_char_uni(glui32 ch)   { glk_put_char_stream_uni(cur_str, ch); }
-void glk_put_string_uni(glui32 *s) { glk_put_string_stream_uni(cur_str, s); }
-void glk_put_buffer_uni(glui32 *buf, glui32 len) { glk_put_buffer_stream_uni(cur_str, buf, len); }
+void glk_put_char_ucs4(glui32 ch)   { glk_put_char_stream_ucs4(cur_str, ch); }
+void glk_put_string_ucs4(glui32 *s) { glk_put_string_stream_ucs4(cur_str, s); }
+void glk_put_buffer_ucs4(glui32 *buf, glui32 len) { glk_put_buffer_stream_ucs4(cur_str, buf, len); }
 void glk_set_style(glui32 styl)     { glk_set_style_stream(cur_str, styl); }
 void glk_set_hyperlink(glui32 linkval) { glk_set_hyperlink_stream(cur_str, linkval); }
+
 
 /* Translate character-oriented functions to buffer-oriented ones */
 glsi32 glk_get_char_stream(strid_t str)
@@ -66,10 +67,10 @@ glsi32 glk_get_char_stream(strid_t str)
     return -1;
 }
 
-glsi32 glk_get_char_stream_uni(strid_t str)
+glsi32 glk_get_char_stream_ucs4(strid_t str)
 {
     glui32 c;
-    if(glk_get_buffer_stream_uni(str, &c, 1) == 1)
+    if(glk_get_buffer_stream_ucs4(str, &c, 1) == 1)
 	return c;
     return -1;
 }
@@ -79,9 +80,9 @@ void glk_put_char_stream(strid_t str, unsigned char ch)
     glk_put_buffer_stream(str, &ch, 1);
 }
 
-void glk_put_char_stream_uni(strid_t str, glui32 ch)
+void glk_put_char_stream_ucs4(strid_t str, glui32 ch)
 {
-    glk_put_buffer_stream_uni(str, &ch, 1);
+    glk_put_buffer_stream_ucs4(str, &ch, 1);
 }
 
 void glk_put_string_stream(strid_t str, char *s)
@@ -89,12 +90,12 @@ void glk_put_string_stream(strid_t str, char *s)
     glk_put_buffer_stream(str, s, strlen(s));
 }
 
-void glk_put_string_stream_uni(strid_t str, glui32 *s)
+void glk_put_string_stream_ucs4(strid_t str, glui32 *s)
 {
     int len;
     for(len = 0; s[len]; len++)
 	continue;
-    glk_put_buffer_stream_uni(str, s, len);
+    glk_put_buffer_stream_ucs4(str, s, len);
 }
 
 glui32 glk_get_line_stream(strid_t str, char *buf, glui32 len)
@@ -113,7 +114,7 @@ glui32 glk_get_line_stream(strid_t str, char *buf, glui32 len)
     return readlen;
 }
 
-glui32 glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
+glui32 glk_get_line_stream_ucs4(strid_t str, glui32 *buf, glui32 len)
 {
     glui32 readlen;
 
@@ -122,7 +123,7 @@ glui32 glk_get_line_stream_uni(strid_t str, glui32 *buf, glui32 len)
     
     len--;
     for(readlen = 0; readlen < len && buf[readlen] != '\n'; readlen++) {
-	if(glk_get_buffer_stream_uni(str, buf + readlen, 1) != 1)
+	if(glk_get_buffer_stream_ucs4(str, buf + readlen, 1) != 1)
 	    break;
     }
     buf[readlen] = 0;

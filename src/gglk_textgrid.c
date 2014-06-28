@@ -136,7 +136,7 @@ static void gglk_textgrid_put_buffer_raw(GglkTextGrid *tb, const glui32 *buf,
 					    tb->cury, tb->curx);
     tb->curx += cell_len;
 
-    utfstr = g_uni_to_utf8(buf, len, NULL, NULL, NULL);
+    utfstr = g_ucs4_to_utf8(buf, len, NULL, NULL, NULL);
 
     gtk_text_buffer_insert_with_tags(tb->base.buffer, &tb->base.iter,
 				     utfstr, -1,

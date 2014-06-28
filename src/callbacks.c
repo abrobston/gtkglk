@@ -64,7 +64,7 @@ void on_open_activate(GtkMenuItem *unused_menuitem, gpointer unused_data)
 static void do_set_text(const char *text, gboolean accept)
 {
     GglkText *tb = GGLK_TEXT(gglk_get_line_input_view());
-    gunichar *buf_uni;
+    gunichar *buf_ucs4;
     
     if(!tb) {
 	char *msg;
@@ -78,9 +78,9 @@ static void do_set_text(const char *text, gboolean accept)
 	return;
     }
     
-    buf_uni = g_utf8_to_uni(text, -1, NULL, NULL, NULL);
-    gglk_text_line_input_set(tb, tb->line_maxlen, buf_uni);
-    g_free(buf_uni);
+    buf_ucs4 = g_utf8_to_ucs4(text, -1, NULL, NULL, NULL);
+    gglk_text_line_input_set(tb, tb->line_maxlen, buf_ucs4);
+    g_free(buf_ucs4);
 
     if(accept)
 	gglk_text_line_input_accept(tb);

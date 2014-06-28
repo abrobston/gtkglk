@@ -24,15 +24,15 @@
 #include <gdk/gdkkeysyms.h>
 
 
-glui32 glk_char_to_lower_uni(glui32 ch)
+glui32 glk_char_to_lower_ucs4(glui32 ch)
 {
     return g_unichar_tolower(ch);
 }
-glui32 glk_char_to_upper_uni(glui32 ch)
+glui32 glk_char_to_upper_ucs4(glui32 ch)
 {
     return g_unichar_toupper(ch);
 }
-glui32 glk_char_to_title_uni(glui32 ch)
+glui32 glk_char_to_title_ucs4(glui32 ch)
 {
     return g_unichar_totitle(ch);
 }

@@ -49,7 +49,7 @@ struct glk_window_struct {
 
     gboolean request[9];
 
-    char *line_buffer_latin1; glui32 *line_buffer_uni;
+    char *line_buffer_latin1; glui32 *line_buffer_ucs4;
     glui32 line_maxlen;
     gidispatch_rock_t line_rock;
 
@@ -274,7 +274,7 @@ static winid_t gglk_create_win(glui32 wintype, glui32 rock)
     win->request[evtype_Arrange] = TRUE;
 
     win->line_rock = dispa_bad;
-    win->line_buffer_latin1 = NULL; win->line_buffer_uni = NULL;
+    win->line_buffer_latin1 = NULL; win->line_buffer_ucs4 = NULL;
 
     win->units[0] = win->units[1] = 1;
     win->parent = win->child[0] = win->child[1] = win->key = NULL;
@@ -514,18 +514,18 @@ void glk_request_line_event(winid_t win, char *buf,
     win->line_buffer_latin1 = buf; win->line_maxlen = maxlen;
     
     {
-	gunichar buf_uni[initlen + 1];
+	gunichar buf_ucs4[initlen + 1];
 	for(i = 0; i < initlen; i++)
-	    buf_uni[i] = buf[i];
-	buf_uni[i] = 0;
-	gglk_text_line_input_set(win->gbuffer, maxlen, buf_uni);
+	    buf_ucs4[i] = buf[i];
+	buf_ucs4[i] = 0;
+	gglk_text_line_input_set(win->gbuffer, maxlen, buf_ucs4);
     }
 
     win->line_rock = gglk_dispa_newmem(win->line_buffer_latin1, win->line_maxlen,
 				       "&+#!Cn");
 }
 
- void glk_request_line_event_uni(winid_t win, glui32 *buf, glui32 maxlen,
+ void glk_request_line_event_ucs4(winid_t win, glui32 *buf, glui32 maxlen,
 				  glui32 initlen)
 {
     glui32 i;
@@ -536,18 +536,18 @@ void glk_request_line_event(winid_t win, char *buf,
     win->request[evtype_LineInput] = TRUE;
     if(initlen > maxlen)
 	initlen = maxlen;
-    win->line_buffer_uni = buf; win->line_maxlen = maxlen;
+    win->line_buffer_ucs4 = buf; win->line_maxlen = maxlen;
     
     {
-	glui32 buf_uni[initlen + 1];
+	glui32 buf_ucs4[initlen + 1];
 	
 	for(i = 0; i < initlen; i++)
-	    buf_uni[i] = buf[i];
-	buf_uni[i] = 0;
-	gglk_text_line_input_set(win->gbuffer, maxlen, buf_uni);
+	    buf_ucs4[i] = buf[i];
+	buf_ucs4[i] = 0;
+	gglk_text_line_input_set(win->gbuffer, maxlen, buf_ucs4);
     }
 
-    win->line_rock = gglk_dispa_newmem(win->line_buffer_uni, win->line_maxlen,
+    win->line_rock = gglk_dispa_newmem(win->line_buffer_ucs4, win->line_maxlen,
 				       "&+#!Iu");
 }
 
@@ -559,11 +559,11 @@ void glk_cancel_line_event(winid_t win, event_t *event)
     gglk_validwin(win, return);
     if(win->request[evtype_LineInput] && win->gbuffer) {
 	strid_t echo = gglk_stream_get_echo(win->stream);
-	gunichar *line_uni;
+	gunichar *line_ucs4;
 	glui32 length;
 
-	line_uni = gglk_text_line_input_get(win->gbuffer);
-	for(length = 0; line_uni[length] != 0; length++)
+	line_ucs4 = gglk_text_line_input_get(win->gbuffer);
+	for(length = 0; line_ucs4[length] != 0; length++)
 	    continue;
 	if(length > win->line_maxlen)
 	    length = win->line_maxlen;
@@ -573,7 +573,7 @@ void glk_cancel_line_event(winid_t win, event_t *event)
 	if(win->line_buffer_latin1 != NULL) {
 	    glui32 i;
 	    for(i = 0; i < length; i++)
-		win->line_buffer_latin1[i] = line_uni[i];
+		win->line_buffer_latin1[i] = line_ucs4[i];
 	    if(echo)
 		glk_put_buffer_stream(echo, win->line_buffer_latin1, length);
 	    glk_put_char_stream(win->stream, '\n');
@@ -581,22 +581,22 @@ void glk_cancel_line_event(winid_t win, event_t *event)
 	    gglk_dispa_endmem(win->line_buffer_latin1, win->line_maxlen,
 			      "&+#!Cn", win->line_rock);
 	    win->line_buffer_latin1 = NULL;
-	} else if(win->line_buffer_uni != NULL) {
+	} else if(win->line_buffer_ucs4 != NULL) {
 	    glui32 i;
 	    for(i = 0; i < length; i++)
-		win->line_buffer_uni[i] = line_uni[i];
+		win->line_buffer_ucs4[i] = line_ucs4[i];
 	    if(echo)
-		glk_put_buffer_stream_uni(echo, win->line_buffer_uni,length);
-	    glk_put_char_stream_uni(win->stream, '\n');
+		glk_put_buffer_stream_ucs4(echo, win->line_buffer_ucs4,length);
+	    glk_put_char_stream_ucs4(win->stream, '\n');
 
-	    gglk_dispa_endmem(win->line_buffer_uni, win->line_maxlen,
+	    gglk_dispa_endmem(win->line_buffer_ucs4, win->line_maxlen,
 			      "&+#!Iu", win->line_rock);
-	    win->line_buffer_uni = NULL;
+	    win->line_buffer_ucs4 = NULL;
 	} else {
 	    g_warning("%s: nowhere to put line event", __func__);
 	}
 
-	g_free(line_uni); line_uni = NULL;
+	g_free(line_ucs4); line_ucs4 = NULL;
 
 	if(event) {
 	    event->type = evtype_LineInput;
@@ -624,7 +624,7 @@ void glk_request_char_event(winid_t win)
     }
     win->request[evtype_CharInput] = TRUE;
 }
-void glk_request_char_event_uni(winid_t win)
+void glk_request_char_event_ucs4(winid_t win)
 {
     GGLK_WIN_TYPES(win, return, wintype_TextBuffer, wintype_TextGrid);
     gglk_check_char_line_events(win, __func__);
