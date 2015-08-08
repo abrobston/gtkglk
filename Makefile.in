@@ -16,8 +16,10 @@ LDFLAGS = @GTKGLK_GTK_LIBS@ @GTKGLK_GCONF_LIBS@ @LIBS@ @LDFLAGS@
 
 OBJS = $(addprefix objs/,gglk.o gui.o window.o stream.o style.o misc.o fileref.o sound.o gestalt.o gglk_graphics.o gglk_text.o gglk_textbuffer.o gglk_textgrid.o gglk_colorpicker.o blorb.o global.o gglk_prefs.o dispatch.o gi_blorb.o gi_dispa.o gtkhpaned.o gtkvpaned.o glkpaned.o support.o interface.o callbacks.o g_bindable.o g_intbits.o trivial.o names.o @LIBOBJS@)
 
-default: Make.gtkglk objs libgtkglk.so.0.@PACKAGE_VERSION@
+default: Make.gtkglk objs libgtkglk.so.0.@PACKAGE_VERSION@ libgtkglk.so
 
+libgtkglk.so: libgtkglk.so.0.@PACKAGE_VERSION@
+	ln -s libgtkglk.so.0.@PACKAGE_VERSION@ libgtkglk.so
 libgtkglk.so.0.@PACKAGE_VERSION@: $(OBJS)
 	$(CC) -shared $(GFLAGS) -Wl,-hlibgtkglk.so.0 -o libgtkglk.so.0.@PACKAGE_VERSION@ $(LDFLAGS) $(OBJS)
 
